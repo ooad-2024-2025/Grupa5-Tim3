@@ -5,16 +5,13 @@ namespace Grupa5Tim3.Models
 {
     public class NotifikacijaUmjetnina
     {
-        [Key]
-        private int id;
-        [ForeignKey("Notifikacija")]
-        private int notifikacijaID {  get; set; }
-        [ForeignKey("Umjetnina")]
-        private int umjetninaID { get; set; }
+        [Key] public int id { get; set; }
+        [ForeignKey("Notifikacija")] public int notifikacijaID {  get; set; }
+        [ForeignKey("Umjetnina")] public int umjetninaID { get; set; }
 
 
-        private Notifikacija notifikacija {  get; set; }
-        private Umjetnina umjetnina { get; set; }
+        public Notifikacija notifikacija {  get; set; }
+        public Umjetnina umjetnina { get; set; }
 
         public NotifikacijaUmjetnina() { }
     }

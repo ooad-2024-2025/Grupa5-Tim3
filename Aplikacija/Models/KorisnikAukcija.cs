@@ -5,16 +5,13 @@ namespace Grupa5Tim3.Models
 {
     public class KorisnikAukcija
     {
-        [Key]
-        private int id {  get; set; }
-        [ForeignKey("Korisnik")]
-        private int korisnikID { get; set; }
-        [ForeignKey("Aukcija")]
-        private int aukcijaID { get; set; }
+        [Key] public int id {  get; set; }
+        [ForeignKey("Korisnik")] public String korisnikID { get; set; }
+        [ForeignKey("Aukcija")] public int aukcijaID { get; set; }
 
 
-        private Korisnik korisnik { get; set; }
-        private Aukcija aukcija { get; set; }
+        public Korisnik korisnik { get; set; }
+        public Aukcija aukcija { get; set; }
 
         public KorisnikAukcija() { }
     }

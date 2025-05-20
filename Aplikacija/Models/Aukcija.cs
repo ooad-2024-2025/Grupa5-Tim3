@@ -3,14 +3,13 @@
 namespace Grupa5Tim3.Models
 {
     public class Aukcija {
-        [Key]
-        private int AukcijaID { get; set; }
-        private int umjetninaID { get; set; }
-        private double trenutnaCijena { get; set; }
-        private DateTime pocetakAukcije {  get; set; }
-        private DateTime zavrsetakAukcije { get; set; }
-        private Status status { get; set; }
-        private int kupacID { get; set; }
+        [Key] public int AukcijaID { get; set; }
+        public int umjetninaID { get; set; }
+        public double trenutnaCijena { get; set; }
+        public DateTime pocetakAukcije {  get; set; }
+        public DateTime zavrsetakAukcije { get; set; }
+        public Status status { get; set; }
+        public int kupacID { get; set; }
 
         public Aukcija() { }
     }

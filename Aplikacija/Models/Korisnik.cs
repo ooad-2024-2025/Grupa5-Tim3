@@ -5,15 +5,13 @@ namespace Grupa5Tim3.Models
 {
     public class Korisnik : IdentityUser
     {
-        [Key]
-        private int korisnikID {  get; set; }
-        private String korisnickoIme { get; set; }
-        private String ime {  get; set; }
-        private String prezime { get; set; }
-        private DateTime datumRodjenja { get; set; }
-        private String lozinka {  get; set; }
-        private String email { get; set; }
-        private Uloga uloga { get; set; }
-        private bool verifikovan {  get; set; }
+        public String korisnickoIme { get; set; }
+        public String ime {  get; set; }
+        public String prezime { get; set; }
+        public DateTime datumRodjenja { get; set; }
+        public String lozinka {  get; set; }
+        public String email { get; set; }
+        public Uloga uloga { get; set; }
+        public bool verifikovan {  get; set; }
     }
 }
