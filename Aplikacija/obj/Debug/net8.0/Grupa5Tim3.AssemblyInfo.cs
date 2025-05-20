@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Grupa5Tim3")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3fa0886bff7eb06b5015c10f88e76747c13518bc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+30c0ed038c28ee3f806eaaa61344cd3f22a74a1e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Grupa5Tim3")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Grupa5Tim3")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
