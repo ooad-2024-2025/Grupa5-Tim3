@@ -1,0 +1,48 @@
+﻿@model Grupa5Tim3.Models.Notifikacija
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Notifikacija</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.tipObavijesti)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.tipObavijesti)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.kodQR)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.kodQR)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.verifikacijskiKod)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.verifikacijskiKod)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.umjetninaID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.umjetninaID)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.korisnikID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.korisnikID)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.notifikacijaID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

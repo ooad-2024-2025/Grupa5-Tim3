@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Grupa5Tim3.Models.Notifikacija>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.tipObavijesti)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.kodQR)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.verifikacijskiKod)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.umjetninaID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.korisnikID)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.tipObavijesti)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.kodQR)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.verifikacijskiKod)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.umjetninaID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.korisnikID)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.notifikacijaID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.notifikacijaID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.notifikacijaID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

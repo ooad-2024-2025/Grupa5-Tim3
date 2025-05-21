@@ -1,0 +1,54 @@
+﻿@model Grupa5Tim3.Models.Aukcija
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Aukcija</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.umjetninaID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.umjetninaID)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.trenutnaCijena)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.trenutnaCijena)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.pocetakAukcije)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.pocetakAukcije)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.zavrsetakAukcije)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.zavrsetakAukcije)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.status)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.status)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.kupacID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.kupacID)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.AukcijaID">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
