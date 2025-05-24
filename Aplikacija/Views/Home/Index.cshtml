@@ -1,8 +1,60 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+<style>
+    .hero-container {
+        position: relative;
+        height: 80vh;
+        overflow: hidden;
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        .hero-container img.bg-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    .hero-logo {
+        position: absolute;
+        top: 32%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 180px;
+        opacity: 0.9;
+        mix-blend-mode: multiply; /* Omogućava bolju integraciju s pozadinom */
+        z-index: 1;
+    }
+
+    .hero-text {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        color: #333;
+        font-family: 'Georgia', serif;
+        font-size: 1.4em;
+        font-style: italic;
+    }
+
+        .hero-text a {
+            color: #333;
+            text-decoration: underline;
+            display: block;
+            margin-top: 5px;
+            font-style: normal;
+            font-size: 0.8em;
+        }
+</style>
+
+<div class="hero-container">
+    <img src="~/images/pocetna.png"  class="bg-image" />
+    <img src="~/images/logo.png" alt="Logo" class="hero-logo" />
+    <div class="hero-text">
+        <p>
+            Join us to explore art and<br />
+            find the perfect piece for your collection!
+        </p>
+    </div>
 </div>

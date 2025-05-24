@@ -1,18 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Grupa5Tim3.Data;
+using Grupa5Tim3.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Grupa5Tim3.Data;
-using Grupa5Tim3.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
+
 
 namespace Grupa5Tim3.Controllers
 {
     public class UmjetninaController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly object uloga;
 
         public UmjetninaController(ApplicationDbContext context)
         {
@@ -92,7 +96,7 @@ namespace Grupa5Tim3.Controllers
             {
                 return NotFound();
             }
-
+         
             if (ModelState.IsValid)
             {
                 try

@@ -2,6 +2,7 @@
 {
     public enum Uloga
     {
-        Gost, RegistrovaniKorisnik, Kriticar  
+        Gost, RegistrovaniKorisnik, Kriticar
+        
     }
 }

@@ -3,7 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Grupa5Tim3.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+});
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
