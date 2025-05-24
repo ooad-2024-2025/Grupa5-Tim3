@@ -58,10 +58,27 @@ namespace Grupa5Tim3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena")] Umjetnina umjetnina)
+       
+        public async Task<IActionResult> Create([Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena")] Umjetnina umjetnina, IFormFile Slika)
         {
             if (ModelState.IsValid)
             {
+            
+                if (Slika != null && Slika.Length > 0)
+                {
+                    var fileName = Path.GetFileName(Slika.FileName);
+                    var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+                    var filePath = Path.Combine(uploads, fileName);
+
+                   
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await Slika.CopyToAsync(stream);
+                    }
+
+                    umjetnina.SlikaPath = "/images/" + fileName;
+                }
+
                 _context.Add(umjetnina);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -90,18 +107,44 @@ namespace Grupa5Tim3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena")] Umjetnina umjetnina)
+        public async Task<IActionResult> Edit(int id, [Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena")] Umjetnina umjetnina, IFormFile NovaSlika)
         {
             if (id != umjetnina.umjetinaID)
             {
                 return NotFound();
             }
-         
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(umjetnina);
+                    var postojecaUmjetnina = await _context.Umjetnina.FindAsync(id);
+                    if (postojecaUmjetnina == null)
+                        return NotFound();
+
+                    postojecaUmjetnina.naziv = umjetnina.naziv;
+                    postojecaUmjetnina.autor = umjetnina.autor;
+                    postojecaUmjetnina.period = umjetnina.period;
+                    postojecaUmjetnina.datum = umjetnina.datum;
+                    postojecaUmjetnina.tehnika = umjetnina.tehnika;
+                    postojecaUmjetnina.pocetnaCijena = umjetnina.pocetnaCijena;
+
+                   
+                    if (NovaSlika != null && NovaSlika.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(NovaSlika.FileName);
+                        var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
+                        var filePath = Path.Combine(uploads, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await NovaSlika.CopyToAsync(stream);
+                        }
+
+                        postojecaUmjetnina.SlikaPath = "/images/" + fileName;
+                    }
+
+                    _context.Update(postojecaUmjetnina);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -115,10 +158,13 @@ namespace Grupa5Tim3.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(umjetnina);
         }
+
 
         // GET: Umjetnina/Delete/5
         public async Task<IActionResult> Delete(int? id)

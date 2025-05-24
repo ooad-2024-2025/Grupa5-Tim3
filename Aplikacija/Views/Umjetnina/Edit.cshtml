@@ -9,51 +9,77 @@
 <h4>Umjetnina</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+    <div class="col-md-6">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="umjetinaID" />
+
             <div class="form-group">
                 <label asp-for="naziv" class="control-label"></label>
                 <input asp-for="naziv" class="form-control" />
                 <span asp-validation-for="naziv" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="autor" class="control-label"></label>
                 <input asp-for="autor" class="form-control" />
                 <span asp-validation-for="autor" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="period" class="control-label"></label>
                 <input asp-for="period" class="form-control" />
                 <span asp-validation-for="period" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="datum" class="control-label"></label>
-                <input asp-for="datum" class="form-control" />
+                <input asp-for="datum" class="form-control" type="date" />
                 <span asp-validation-for="datum" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="tehnika" class="control-label"></label>
                 <input asp-for="tehnika" class="form-control" />
                 <span asp-validation-for="tehnika" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="pocetnaCijena" class="control-label"></label>
                 <input asp-for="pocetnaCijena" class="form-control" />
                 <span asp-validation-for="pocetnaCijena" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label>Trenutna slika:</label><br />
+                @if (!string.IsNullOrEmpty(Model.SlikaPath))
+                {
+                    <img src="@Model.SlikaPath" style="width:150px;" />
+                }
+                else
+                {
+                    <p>(Nema slike)</p>
+                }
+            </div>
+
+            <div class="form-group">
+                <label>Nova slika (opcionalno):</label>
+                <input type="file" name="NovaSlika" class="form-control" />
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Sačuvaj promjene" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="mt-3">
+    <a asp-action="Index">Nazad na listu</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
