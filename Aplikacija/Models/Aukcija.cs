@@ -8,9 +8,8 @@ namespace Grupa5Tim3.Models
         public double trenutnaCijena { get; set; }
         public DateTime pocetakAukcije {  get; set; }
         public DateTime zavrsetakAukcije { get; set; }
-        public Status status { get; set; }
-        public int kupacID { get; set; }
-
+        [EnumDataType(typeof(Status))]    public Status status { get; set; }
+        public String kupacID { get; set; }
         public Aukcija() { }
     }
 }
