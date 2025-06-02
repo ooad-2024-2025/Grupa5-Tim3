@@ -4,6 +4,7 @@ using Grupa5Tim3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Grupa5Tim3.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250602012733_DodavanjeOpisaUmjetnina")]
+    partial class DodavanjeOpisaUmjetnina
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,7 +170,7 @@ namespace Grupa5Tim3.Data.Migrations
 
                     b.Property<string>("korisnikID")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("tipObavijesti")
                         .HasColumnType("int");
@@ -181,6 +184,8 @@ namespace Grupa5Tim3.Data.Migrations
 
                     b.HasKey("notifikacijaID");
 
+                    b.HasIndex("korisnikID");
+
                     b.ToTable("Notifikacija", (string)null);
                 });
 
@@ -192,7 +197,7 @@ namespace Grupa5Tim3.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<string>("korisnikID")
+                    b.Property<string>("KorisnikID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -201,7 +206,7 @@ namespace Grupa5Tim3.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("korisnikID");
+                    b.HasIndex("KorisnikID");
 
                     b.HasIndex("notifikacijaID");
 
@@ -428,11 +433,22 @@ namespace Grupa5Tim3.Data.Migrations
                     b.Navigation("korisnik");
                 });
 
+            modelBuilder.Entity("Grupa5Tim3.Models.Notifikacija", b =>
+                {
+                    b.HasOne("Grupa5Tim3.Models.Korisnik", "Korisnik")
+                        .WithMany()
+                        .HasForeignKey("korisnikID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Korisnik");
+                });
+
             modelBuilder.Entity("Grupa5Tim3.Models.NotifikacijaKorisnik", b =>
                 {
                     b.HasOne("Grupa5Tim3.Models.Korisnik", "korisnik")
                         .WithMany()
-                        .HasForeignKey("korisnikID")
+                        .HasForeignKey("KorisnikID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

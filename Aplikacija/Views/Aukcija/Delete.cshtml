@@ -48,10 +48,12 @@
             @Html.DisplayFor(model => model.kupacID)
         </dd>
     </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="AukcijaID" />
+    @if (User.IsInRole("Administrator"))
+    {
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="AukcijaID" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>
+    }
 </div>

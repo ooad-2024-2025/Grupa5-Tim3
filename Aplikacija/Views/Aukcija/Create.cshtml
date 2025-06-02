@@ -1,58 +1,69 @@
 ﻿@model Grupa5Tim3.Models.Aukcija
 
+@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Kreiraj aukciju";
 }
 
-<h1>Create</h1>
+@if (User.IsInRole("Administrator"))
+{
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+        <div class="p-5 shadow rounded" style="width: 600px; background-color: white;">
 
-<h4>Aukcija</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="umjetninaID" class="control-label"></label>
-                <input asp-for="umjetninaID" class="form-control" />
-                <span asp-validation-for="umjetninaID" class="text-danger"></span>
+            <h2 class="text-center mb-4">Kreiraj novu aukciju</h2>
+
+            <form asp-action="Create" method="post" asp-antiforgery="true">
+                <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3" role="alert"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="umjetninaID" class="form-label">Umjetnina ID</label>
+                    <input asp-for="umjetninaID" class="form-control" />
+                    <span asp-validation-for="umjetninaID" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="trenutnaCijena" class="form-label">Trenutna cijena</label>
+                    <input asp-for="trenutnaCijena" class="form-control" />
+                    <span asp-validation-for="trenutnaCijena" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="pocetakAukcije" class="form-label">Početak aukcije</label>
+                    <input asp-for="pocetakAukcije" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="pocetakAukcije" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="zavrsetakAukcije" class="form-label">Završetak aukcije</label>
+                    <input asp-for="zavrsetakAukcije" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="zavrsetakAukcije" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="kupacID" class="form-label">Kupac ID</label>
+                    <input asp-for="kupacID" class="form-control" />
+                    <span asp-validation-for="kupacID" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="status" class="form-label">Status aukcije</label>
+                    <select asp-for="status" class="form-control">
+                        <option value="Aktivna">Aktivna</option>
+                        <option value="Završena">Završena</option>
+                    </select>
+                    <span asp-validation-for="status" class="text-danger"></span>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary w-100">Kreiraj aukciju</button>
+                </div>
+            </form>
+
+            <div class="mt-4 text-center">
+                <a asp-action="Index">Nazad na listu</a>
             </div>
-            <div class="form-group">
-                <label asp-for="trenutnaCijena" class="control-label"></label>
-                <input asp-for="trenutnaCijena" class="form-control" />
-                <span asp-validation-for="trenutnaCijena" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="pocetakAukcije" class="control-label"></label>
-                <input asp-for="pocetakAukcije" class="form-control" />
-                <span asp-validation-for="pocetakAukcije" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="zavrsetakAukcije" class="control-label"></label>
-                <input asp-for="zavrsetakAukcije" class="form-control" />
-                <span asp-validation-for="zavrsetakAukcije" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="status" class="control-label"></label>
-                <select asp-for="status" class="form-control"></select>
-                <span asp-validation-for="status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="kupacID" class="control-label"></label>
-                <input asp-for="kupacID" class="form-control" />
-                <span asp-validation-for="kupacID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

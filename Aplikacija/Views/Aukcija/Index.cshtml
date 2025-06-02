@@ -1,65 +1,37 @@
 ﻿@model IEnumerable<Grupa5Tim3.Models.Aukcija>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Aukcije";
 }
 
-<h1>Index</h1>
+<h1 class="mb-4">Aukcije</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary mb-4">Kreiraj novu aukciju</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.umjetninaID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.trenutnaCijena)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.pocetakAukcije)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.zavrsetakAukcije)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.kupacID)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.umjetninaID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.trenutnaCijena)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.pocetakAukcije)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.zavrsetakAukcije)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.kupacID)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.AukcijaID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.AukcijaID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.AukcijaID">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Aukcija ID: @item.AukcijaID</h5>
+                    <p class="card-text"><strong>Umjetnina ID:</strong> @item.umjetninaID</p>
+                    <p class="card-text"><strong>Trenutna cijena:</strong> @item.trenutnaCijena</p>
+                    <p class="card-text"><strong>Početak:</strong> @item.pocetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
+                    <p class="card-text"><strong>Završetak:</strong> @item.zavrsetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
+                    <p class="card-text"><strong>Status:</strong> @item.status</p>
+                    <p class="card-text"><strong>Kupac ID:</strong> @(string.IsNullOrEmpty(item.kupacID) ? "Nema" : item.kupacID)</p>
+
+
+                </div>
+                <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
+                    <a asp-action="Edit" asp-route-id="@item.AukcijaID" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.AukcijaID" class="btn btn-sm btn-outline-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.AukcijaID" class="btn btn-sm btn-outline-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

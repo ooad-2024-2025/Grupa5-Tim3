@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Net.Mail;
 
 namespace Grupa5Tim3.Models
 {
@@ -7,11 +9,12 @@ namespace Grupa5Tim3.Models
     {
         [Key] public int notifikacijaID {  get; set; }
         public Obavijest tipObavijesti { get; set; }
-        public String kodQR { get; set; }
+        public string? kodQR { get; set; }
         public String verifikacijskiKod {  get; set; }
         public int umjetninaID { get; set; }
-        public int korisnikID { get; set; }
+        public String korisnikID { get; set; }
+    
 
-        public Notifikacija() { }
+
     }
 }

@@ -1,54 +1,102 @@
 ﻿@model Grupa5Tim3.Models.Umjetnina
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalji";
 }
 
-<h1>Details</h1>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 18px;
+    }
 
-<div>
-    <h4>Umjetnina</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.naziv)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.naziv)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.autor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.autor)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.period)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.period)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.datum)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.datum)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.tehnika)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.tehnika)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.pocetnaCijena)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.pocetnaCijena)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.umjetinaID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    h3 {
+        font-size: 28px;
+        font-weight: 600;
+    }
+
+    .custom-purple-btn {
+        background-color: #c6b3f9;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        padding: 12px 24px;
+        font-size: 18px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease;
+    }
+
+        .custom-purple-btn:hover {
+            background-color: #b49ee0;
+            color: white;
+        }
+
+    .text-justify {
+        text-align: justify;
+    }
+
+    .arrow {
+        font-size: 30px;
+        cursor: pointer;
+        user-select: none;
+        color: #555;
+    }
+
+    .info-label {
+        font-weight: 600;
+    }
+
+    .card {
+        font-size: 18px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow p-4">
+        <div class="row">
+           
+            <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
+                <div class="mb-2">
+                    <span class="arrow">&#x276E;</span> 
+                </div>
+                @if (!string.IsNullOrEmpty(Model.SlikaPath))
+                {
+                    <img src="@Model.SlikaPath" alt="Slika umjetnine" class="img-fluid rounded" style="max-height: 350px;" />
+                }
+                else
+                {
+                    <p>(Nema slike)</p>
+                }
+                <div class="mt-2">
+                    <span class="arrow">&#x276F;</span> 
+                </div>
+            </div>
+
+          
+            <div class="col-md-8">
+                <h3 class="text-center mb-4">"@Model.naziv"</h3>
+
+                <p><span class="info-label">Artist:</span> @Model.autor</p>
+                <p><span class="info-label">Created:</span> @Model.datum</p>
+                <p><span class="info-label">Style:</span> @Model.period</p>
+                <p><span class="info-label">Popularity:</span> 258 355 062 bids</p>
+                
+
+                <p class="mt-4"><span class="info-label">Description:</span></p>
+                <p class="text-justify">
+                    @Model.opis
+                </p>
+
+                <div class="d-flex justify-content-end mt-4">
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model?.umjetinaID" class="btn btn-outline-primary me-2">Edit this post</a>
+                        <a asp-action="Delete" asp-route-id="@Model?.umjetinaID" class="btn btn-danger me-2">Delete post</a>
+                    }
+                    
+             
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

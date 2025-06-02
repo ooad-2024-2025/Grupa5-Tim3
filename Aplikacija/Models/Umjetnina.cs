@@ -29,6 +29,7 @@ namespace Grupa5Tim3.Models
 
         [Range(0, double.MaxValue, ErrorMessage = "Početna cijena ne smije biti manja od 0.")]
         public double pocetnaCijena { get; set; }
+        public String ? opis { get; set; }
 
         public Umjetnina() { }
     }

@@ -7,7 +7,7 @@ namespace Grupa5Tim3.Models
     {
         [Key] public int id {  get; set; }
         [ForeignKey("Notifikacija")] public int notifikacijaID { get; set; }
-        [ForeignKey("Korisnik")] public String KorisnikID { get; set; }
+        [ForeignKey("Korisnik")] public String korisnikID { get; set; }
 
 
         public Notifikacija notifikacija { get; set; }

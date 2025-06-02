@@ -99,6 +99,11 @@
                 <input asp-for="pocetnaCijena" type="number" step="0.01" />
                 <span asp-validation-for="pocetnaCijena" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="opis" class="control-label"></label>
+                <textarea asp-for="opis" class="form-control"></textarea>
+                <span asp-validation-for="opis" class="text-danger"></span>
+            </div>
 
             <div class="form-group" style="grid-column: span 2;">
                 <label for="Slika">Slika</label>

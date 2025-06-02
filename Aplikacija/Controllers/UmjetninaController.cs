@@ -1,5 +1,6 @@
-﻿using Grupa5Tim3.Data;
+﻿
 using Grupa5Tim3.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +9,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Grupa5Tim3.Data;
 
 
 
 namespace Grupa5Tim3.Controllers
 {
+
     public class UmjetninaController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -48,6 +51,7 @@ namespace Grupa5Tim3.Controllers
         }
 
         // GET: Umjetnina/Create
+        [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
             return View();
@@ -58,19 +62,19 @@ namespace Grupa5Tim3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-       
-        public async Task<IActionResult> Create([Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena")] Umjetnina umjetnina, IFormFile Slika)
+
+        public async Task<IActionResult> Create([Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena,opis")] Umjetnina umjetnina, IFormFile Slika)
         {
             if (ModelState.IsValid)
             {
-            
+
                 if (Slika != null && Slika.Length > 0)
                 {
                     var fileName = Path.GetFileName(Slika.FileName);
                     var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
                     var filePath = Path.Combine(uploads, fileName);
 
-                   
+
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await Slika.CopyToAsync(stream);
@@ -107,7 +111,7 @@ namespace Grupa5Tim3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena")] Umjetnina umjetnina, IFormFile NovaSlika)
+        public async Task<IActionResult> Edit(int id, [Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena,opis")] Umjetnina umjetnina, IFormFile NovaSlika)
         {
             if (id != umjetnina.umjetinaID)
             {
@@ -128,9 +132,10 @@ namespace Grupa5Tim3.Controllers
                     postojecaUmjetnina.datum = umjetnina.datum;
                     postojecaUmjetnina.tehnika = umjetnina.tehnika;
                     postojecaUmjetnina.pocetnaCijena = umjetnina.pocetnaCijena;
+                    postojecaUmjetnina.opis = umjetnina.opis;
 
-                   
-                    if (NovaSlika != null && NovaSlika.Length > 0)
+
+                    if (NovaSlika == null || NovaSlika.Length > 0)
                     {
                         var fileName = Path.GetFileName(NovaSlika.FileName);
                         var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");

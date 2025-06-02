@@ -1,0 +1,95 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Registracija";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+    <div class="p-5 shadow rounded" style="width: 600px; background-color: white;">
+        <h2 class="text-center mb-4">Registracija</h2>
+
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3" role="alert"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Input.ime" class="form-label">Ime</label>
+                <input asp-for="Input.ime" class="form-control" placeholder="Unesite ime" />
+                <span asp-validation-for="Input.ime" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Input.prezime" class="form-label">Prezime</label>
+                <input asp-for="Input.prezime" class="form-control" placeholder="Unesite prezime" />
+                <span asp-validation-for="Input.prezime" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Input.datumRodjenja" class="form-label">Datum rođenja</label>
+                <input asp-for="Input.datumRodjenja" type="date" class="form-control" />
+                <span asp-validation-for="Input.datumRodjenja" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Input.Email" class="form-label">Email</label>
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Input.Password" class="form-label">Lozinka</label>
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Input.ConfirmPassword" class="form-label">Potvrdi lozinku</label>
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button id="registerSubmit" type="submit" class="btn w-100" style="background-color: #d6b3ff; color: black; font-weight: bold;">
+                REGISTRUJ SE
+            </button>
+        </form>
+
+        <div class="mt-4 text-center">
+            <p>Već imate nalog? <a asp-page="./Login">Prijavi se</a></p>
+        </div>
+    </div>
+</div>
+
+@if (Model.ShowVerificationModal)
+{
+    <form method="post" asp-page-handler="Verify">
+        <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content rounded-3 shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Unesite verifikacioni kod</h5>
+                        <button type="button" class="btn-close" aria-label="Close" onclick="window.location.href='@Url.Page("/Index")'"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" class="form-control" placeholder="Kod" name="VerificationCode" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Potvrdi</button>
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='@Url.Page("/Index")'">Otkaži</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var showModal = @Json.Serialize(Model.ShowVerificationModal);
+            if (showModal) {
+                var myModal = new bootstrap.Modal(document.getElementById('verificationModal'));
+                myModal.show();
+            }
+        });
+    </script>
+}

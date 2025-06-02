@@ -4,6 +4,7 @@ using Grupa5Tim3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Grupa5Tim3.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250601162424_AddNullOR")]
+    partial class AddNullOR
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -192,7 +195,7 @@ namespace Grupa5Tim3.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<string>("korisnikID")
+                    b.Property<string>("KorisnikID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -201,7 +204,7 @@ namespace Grupa5Tim3.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("korisnikID");
+                    b.HasIndex("KorisnikID");
 
                     b.HasIndex("notifikacijaID");
 
@@ -251,9 +254,6 @@ namespace Grupa5Tim3.Data.Migrations
 
                     b.Property<string>("naziv")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("opis")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("period")
@@ -432,7 +432,7 @@ namespace Grupa5Tim3.Data.Migrations
                 {
                     b.HasOne("Grupa5Tim3.Models.Korisnik", "korisnik")
                         .WithMany()
-                        .HasForeignKey("korisnikID")
+                        .HasForeignKey("KorisnikID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

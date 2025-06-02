@@ -4,9 +4,13 @@
     ViewData["Title"] = "Dostupne umjetnine";
 }
 
-<div class="text-end mb-3">
-    <a asp-action="Create" class="btn btn-primary">Add post</a>
-</div>
+
+@if (User.IsInRole("Administrator"))
+{
+    <div class="text-end mb-3">
+        <a asp-action="Create" class="btn btn-primary">Add post</a>
+    </div>
+}
 
 <div class="row">
     @foreach (var item in Model)
@@ -26,7 +30,8 @@
                     <h5 class="card-title">"@item.naziv"</h5>
                     <p class="card-text">@item.autor</p>
                     <p class="card-text"><strong>Highest bid:</strong> @item.pocetnaCijena</p>
-                    <a asp-controller="Aukcija" asp-action="Create" class="btn btn-light border">BID</a>
+                    <a asp-controller="Aukcija" asp-action="Bid" asp-route-id="@item.umjetinaID" class="btn btn-light border">BID</a>
+
 
                 </div>
 
