@@ -34,11 +34,19 @@
 
 
                 </div>
+                @if (User.IsInRole("Administrator"))
+                {
 
                 <div class="card-footer text-center">
                     <a asp-action="Edit" asp-route-id="@item.umjetinaID">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.umjetinaID">Details</a> |
+                    |
                     <a asp-action="Delete" asp-route-id="@item.umjetinaID">Delete</a>
+                </div>
+                }
+                <div class="card-footer text-center">
+                    
+                    <a asp-action="Details" asp-route-id="@item.umjetinaID">Details</a> 
+                    
                 </div>
             </div>
         </div>
