@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
+using Grupa5Tim3.servis;
 
 namespace Grupa5Tim3.Controllers
 {
@@ -74,6 +76,10 @@ namespace Grupa5Tim3.Controllers
 
                 _context.Add(aukcija);
                 await _context.SaveChangesAsync();
+                BackgroundJob.Schedule<AukcijaService>(
+                    service => service.ZatvoriAukciju(aukcija.AukcijaID),
+                    aukcija.zavrsetakAukcije - DateTime.Now);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(aukcija);

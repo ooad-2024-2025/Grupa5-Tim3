@@ -4,6 +4,8 @@ using Grupa5Tim3.servis;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Hangfire;
+using Hangfire.SqlServer;   
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureApplicationCookie(options =>
@@ -22,6 +24,17 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<SendGridEmailSender, SendGridEmailSender>();
 builder.Services.Configure<SendGridOptions>(
     builder.Configuration.GetSection("SendGrid"));
+
+builder.Services.AddScoped<AukcijaService>();
+
+builder.Services.AddHangfire(config =>
+    config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+          .UseSimpleAssemblyNameTypeSerializer()
+          .UseRecommendedSerializerSettings()
+          .UseSqlServerStorage(connectionString));
+
+builder.Services.AddHangfireServer();
+
 
 
 
@@ -44,6 +57,8 @@ app.UseRouting();
 app.UseSession();  
 
 app.UseAuthorization();
+
+app.UseHangfireDashboard(); // omogu?ava pristup /hangfire
 
 
 // Configure the HTTP request pipeline.
