@@ -9,35 +9,54 @@
         <div class="card-body text-center">
             <h2 class="card-title mb-4">BIDDING</h2>
 
-            <p><strong>Umjetnina ID:</strong> @Model.umjetninaID</p>
-            <p><strong>Trenutna cijena:</strong> @Model.trenutnaCijena</p>
-
-            @if (Model.status == Status.Aktivna)
+            @if (Model == null)
             {
-                <form asp-action="Bid" method="post" class="mt-4">
-                    <input type="hidden" name="id" value="@Model.AukcijaID" />
-                    <div class="form-group mb-3">
-                        <label for="novaCijena" class="form-label">Unesi svoju ponudu:</label>
-                        <input type="number" step="0.01" class="form-control" name="novaCijena" required />
-                    </div>
-                    <button type="submit" class="btn" style="background-color: #D6C4F2; color: black;">BID</button>
-                </form>
-            }
-            else if(Model.status==Status.Finalizirana)
-            {
-                <div class="alert alert-info mt-4">
-                    Aukcija je završena.
+                <div class="alert alert-info">
+                    Aukcija još uvijek nije aktivna.
                 </div>
             }
             else
             {
-                <div class="alert alert-info mt-4">
-                    Aukcija je otkazana.
-                </div>
-                
+                <p><strong>Umjetnina ID:</strong> @Model.umjetninaID</p>
+                <p><strong>Trenutna cijena:</strong> @Model.trenutnaCijena</p>
+
+                @if (Model.status == Status.Aktivna)
+                {
+                    <form asp-action="Bid" method="post" class="mt-4">
+                        <input type="hidden" name="id" value="@Model.AukcijaID" />
+                        <div class="form-group mb-3">
+                            <label for="novaCijena" class="form-label">Unesi svoju ponudu:</label>
+                            <input type="number" step="0.01" class="form-control" name="novaCijena" required />
+                        </div>
+                        <button type="submit" class="btn" style="background-color: #D6C4F2; color: black;">BID</button>
+                    </form>
+                }
+                else if (Model.status == Status.Finalizirana)
+                {
+                    <div class="alert alert-info mt-4">
+                        Aukcija je završena.
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info mt-4">
+                        Aukcija je otkazana.
+                    </div>
+                }
             }
 
             <a asp-action="Index" class="btn btn-secondary mt-3">Nazad na aukcije</a>
+
+           
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger mt-3">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
         </div>
     </div>
 </div>

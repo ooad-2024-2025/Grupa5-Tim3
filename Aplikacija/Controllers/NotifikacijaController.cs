@@ -149,6 +149,8 @@ namespace Grupa5Tim3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+
         private bool NotifikacijaExists(int id)
         {
             return _context.Notifikacija.Any(e => e.notifikacijaID == id);

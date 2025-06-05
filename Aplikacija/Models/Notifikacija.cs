@@ -13,7 +13,8 @@ namespace Grupa5Tim3.Models
         public String verifikacijskiKod {  get; set; }
         public int umjetninaID { get; set; }
         public String korisnikID { get; set; }
-    
+
+
 
 
     }

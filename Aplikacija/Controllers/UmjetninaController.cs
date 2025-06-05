@@ -1,5 +1,6 @@
-﻿
+﻿using Grupa5Tim3.Data;
 using Grupa5Tim3.Models;
+using Grupa5Tim3.servis;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -7,41 +8,27 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Grupa5Tim3.Data;
-
-
 
 namespace Grupa5Tim3.Controllers
 {
-
     public class UmjetninaController : Controller
     {
+    
         private readonly ApplicationDbContext _context;
-        private readonly object uloga;
 
         public UmjetninaController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Umjetnina
+        // GET: Umjetninas
         public async Task<IActionResult> Index()
         {
-            var umjetnine = await _context.Umjetnina.ToListAsync();
-
-            var aukcije = await _context.Aukcija
-                .GroupBy(a => a.umjetninaID)
-                .Select(g => g.OrderByDescending(a => a.zavrsetakAukcije).FirstOrDefault())
-                .ToDictionaryAsync(a => a.umjetninaID, a => a);
-
-            ViewBag.Aukcije = aukcije;
-
-            return View(umjetnine);
+            return View(await _context.Umjetnina.ToListAsync());
         }
 
-        // GET: Umjetnina/Details/5
+        // GET: Umjetninas/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -59,6 +46,7 @@ namespace Grupa5Tim3.Controllers
             return View(umjetnina);
         }
 
+        // GET: Umjetninas/Create
         // GET: Umjetnina/Create
         [Authorize(Roles = "Administrator")]
         public IActionResult Create()
@@ -99,7 +87,8 @@ namespace Grupa5Tim3.Controllers
             return View(umjetnina);
         }
 
-        // GET: Umjetnina/Edit/5
+
+        // GET: Umjetninas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -115,62 +104,96 @@ namespace Grupa5Tim3.Controllers
             return View(umjetnina);
         }
 
-        // POST: Umjetnina/Edit/5
+        // POST: Umjetninas/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena,opis")] Umjetnina umjetnina, IFormFile NovaSlika)
+        public async Task<IActionResult> Edit(int id, [Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena,opis")] Umjetnina umjetnina, IFormFile Slika)
         {
             if (id != umjetnina.umjetinaID)
-            {
                 return NotFound();
+
+            var emailSender = HttpContext.RequestServices.GetService<SendGridEmailSender>();
+
+            if (User.IsInRole("Kriticar"))
+            {
+                ModelState.Remove("naziv");
+                ModelState.Remove("autor");
+                ModelState.Remove("period");
+                ModelState.Remove("datum");
+                ModelState.Remove("tehnika");
+                ModelState.Remove("opis");
+                ModelState.Remove("Slika");
+            }
+            else
+            {
+                if (Slika == null || Slika.Length == 0)
+                    ModelState.Remove("Slika");
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var postojecaUmjetnina = await _context.Umjetnina.FindAsync(id);
-                    if (postojecaUmjetnina == null)
+                    var existingUmjetnina = await _context.Umjetnina.FindAsync(id);
+                    if (existingUmjetnina == null)
                         return NotFound();
 
-                    postojecaUmjetnina.naziv = umjetnina.naziv;
-                    postojecaUmjetnina.autor = umjetnina.autor;
-                    postojecaUmjetnina.period = umjetnina.period;
-                    postojecaUmjetnina.datum = umjetnina.datum;
-                    postojecaUmjetnina.tehnika = umjetnina.tehnika;
-                    postojecaUmjetnina.pocetnaCijena = umjetnina.pocetnaCijena;
-                    postojecaUmjetnina.opis = umjetnina.opis;
+                    var user = HttpContext.User;
 
-
-                    if (NovaSlika == null || NovaSlika.Length > 0)
+                    if (user.IsInRole("Kriticar"))
                     {
-                        var fileName = Path.GetFileName(NovaSlika.FileName);
+                        bool jeNovaCijena = umjetnina.pocetnaCijena.HasValue
+                            && umjetnina.pocetnaCijena > 0
+                            && (existingUmjetnina.pocetnaCijena != umjetnina.pocetnaCijena);
+
+                        existingUmjetnina.pocetnaCijena = umjetnina.pocetnaCijena;
+
+                        if (jeNovaCijena)
+                        {
+                            string subject = "Postavljena početna cijena";
+                            string message = $"Kritičar je postavio početnu cijenu za umjetninu <strong>{existingUmjetnina.naziv}</strong> (ID: <strong>{existingUmjetnina.umjetinaID}</strong>): <strong>{umjetnina.pocetnaCijena} KM</strong>.";
+
+                            if (emailSender != null)
+                            {
+                                await emailSender.SendEmailAsync("lamijabojic@gmail.com", subject, message);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        existingUmjetnina.naziv = umjetnina.naziv;
+                        existingUmjetnina.autor = umjetnina.autor;
+                        existingUmjetnina.period = umjetnina.period;
+                        existingUmjetnina.datum = umjetnina.datum;
+                        existingUmjetnina.tehnika = umjetnina.tehnika;
+                        existingUmjetnina.opis = umjetnina.opis;
+                    }
+
+                    if (Slika != null && Slika.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(Slika.FileName);
                         var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images");
                         var filePath = Path.Combine(uploads, fileName);
 
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
-                            await NovaSlika.CopyToAsync(stream);
+                            await Slika.CopyToAsync(stream);
                         }
 
-                        postojecaUmjetnina.SlikaPath = "/images/" + fileName;
+                        existingUmjetnina.SlikaPath = "/images/" + fileName;
                     }
 
-                    _context.Update(postojecaUmjetnina);
+                    _context.Update(existingUmjetnina);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!UmjetninaExists(umjetnina.umjetinaID))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -179,8 +202,7 @@ namespace Grupa5Tim3.Controllers
             return View(umjetnina);
         }
 
-
-        // GET: Umjetnina/Delete/5
+        // GET: Umjetninas/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -198,7 +220,7 @@ namespace Grupa5Tim3.Controllers
             return View(umjetnina);
         }
 
-        // POST: Umjetnina/Delete/5
+        // POST: Umjetninas/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

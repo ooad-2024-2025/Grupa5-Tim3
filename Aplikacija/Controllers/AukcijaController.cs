@@ -201,7 +201,7 @@ namespace Grupa5Tim3.Controllers
             var aukcija = await _context.Aukcija
                 .FirstOrDefaultAsync(a => a.umjetninaID == id );
 
-            if (aukcija == null) return NotFound();
+          
 
             return View(aukcija);
         }
@@ -212,7 +212,19 @@ namespace Grupa5Tim3.Controllers
         public async Task<IActionResult> Bid(int id, double novaCijena)
         {
             var aukcija = await _context.Aukcija.FindAsync(id);
-            if (aukcija == null || aukcija.status !=Status.Aktivna) return NotFound();
+
+            if (aukcija == null)
+            {
+           
+                ModelState.AddModelError("", "Aukcija još uvijek nije aktivna.");
+                return View(null); 
+            }
+
+            if (aukcija.status != Status.Aktivna)
+            {
+                ModelState.AddModelError("", "Aukcija nije aktivna.");
+                return View(aukcija);
+            }
 
             if (novaCijena <= aukcija.trenutnaCijena)
             {
@@ -231,6 +243,7 @@ namespace Grupa5Tim3.Controllers
 
             return RedirectToAction(nameof(Details), new { id = aukcija.AukcijaID });
         }
+
 
         private bool AukcijaExists(int id)
         {
