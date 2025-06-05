@@ -186,7 +186,7 @@ namespace Grupa5Tim3.Controllers
         public async Task<IActionResult> Bid(int id)
         {
             var aukcija = await _context.Aukcija
-                .FirstOrDefaultAsync(a => a.umjetninaID == id && a.status == Status.Aktivna);
+                .FirstOrDefaultAsync(a => a.umjetninaID == id );
 
             if (aukcija == null) return NotFound();
 

@@ -9,7 +9,7 @@ namespace Grupa5Tim3.Models
         public DateTime pocetakAukcije {  get; set; }
         public DateTime zavrsetakAukcije { get; set; }
         [EnumDataType(typeof(Status))]    public Status status { get; set; }
-        public String kupacID { get; set; }
+        public String ?kupacID { get; set; }
         public Aukcija() { }
     }
 }
