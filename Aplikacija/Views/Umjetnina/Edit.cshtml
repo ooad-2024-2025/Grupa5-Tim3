@@ -31,55 +31,67 @@
     </div>
 }
 
-else if(User.IsInRole("Administrator"))
+else if (User.IsInRole("Administrator"))
 {
-    <div class="row">
-        <div class="col-md-6">
-            <form asp-action="Edit" asp-controller="Umjetnina" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="umjetinaID" />
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+        <form asp-action="Edit" asp-controller="Umjetnina" method="post" enctype="multipart/form-data"
+              style="background-color: #f8f5ff; padding: 40px; border-radius: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.1); width: 600px;">
 
-                <div class="form-group">
-                    <label asp-for="naziv" class="control-label"></label>
-                    <input asp-for="naziv" class="form-control" />
-                    <span asp-validation-for="naziv" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="autor" class="control-label"></label>
-                    <input asp-for="autor" class="form-control" />
-                    <span asp-validation-for="autor" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="period" class="control-label"></label>
-                    <input asp-for="period" class="form-control" />
-                    <span asp-validation-for="period" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="datum" class="control-label"></label>
-                    <input asp-for="datum" class="form-control" />
-                    <span asp-validation-for="datum" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="tehnika" class="control-label"></label>
-                    <input asp-for="tehnika" class="form-control" />
-                    <span asp-validation-for="tehnika" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label class="control-label fw-bold">Nova slika (opcionalno):</label>
-                    <input type="file" name="Slika" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label asp-for="opis" class="control-label"></label>
-                    <input asp-for="opis" class="form-control" />
-                    <span asp-validation-for="opis" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Spremi" class="btn btn-primary" />
-                </div>
-            </form>
-        </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="umjetinaID" />
+
+            <h2 class="text-center mb-4 fw-bold">Uredi umjetninu</h2>
+
+            <div class="form-group mb-3">
+                <label asp-for="naziv" class="fw-bold">Naziv</label>
+                <input asp-for="naziv" class="form-control rounded" />
+                <span asp-validation-for="naziv" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="autor" class="fw-bold">Autor</label>
+                <input asp-for="autor" class="form-control rounded" />
+                <span asp-validation-for="autor" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="period" class="fw-bold">Period</label>
+                <input asp-for="period" class="form-control rounded" />
+                <span asp-validation-for="period" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="datum" class="fw-bold">Datum</label>
+                <input asp-for="datum" type="date" class="form-control rounded" />
+                <span asp-validation-for="datum" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="tehnika" class="fw-bold">Tehnika</label>
+                <input asp-for="tehnika" class="form-control rounded" />
+                <span asp-validation-for="tehnika" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="fw-bold">Nova slika (opcionalno):</label>
+                <input type="file" name="Slika" class="form-control rounded" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="opis" class="fw-bold">Opis</label>
+                <textarea asp-for="opis" class="form-control rounded" rows="3"></textarea>
+                <span asp-validation-for="opis" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group text-center mt-4">
+                <input type="submit" value="SPREMI"
+                       class="btn"
+                       style="background-color: #c7a8f5; color: white; font-weight: bold; padding: 10px 30px; border-radius: 12px;" />
+            </div>
+        </form>
     </div>
 }
+
 
 <div class="mt-3">
     <a asp-action="Index">Nazad na listu</a>

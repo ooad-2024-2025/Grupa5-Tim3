@@ -8,8 +8,8 @@
 @if (User.IsInRole("Administrator"))
 {
     <div class="text-end mb-3">
-        <a asp-action="Create" class="btn btn-primary">Add post</a>
-    </div>
+    <a asp-action="Create" class="btn" style="background-color: #D8BFD8; color: black;">Add post</a>
+</div>
 }
 
 <div class="row">
@@ -29,10 +29,35 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">"@item.naziv"</h5>
                     <p class="card-text">@item.autor</p>
+                    @if (aukcije != null && aukcije.ContainsKey(item.umjetinaID))
+                       {
+                            var aukcija = aukcije[item.umjetinaID];
+                                     if (  aukcija.status==Status.Aktivna)
+                                         {
+                                             <p class="card-text" style="font-weight: bold; color: black;">Highest bid: @aukcija.trenutnaCijena.ToString("F2") KM</p>
+
+
+
+
+                                           } else if(aukcija.status==Status.Finalizirana
+                                           )
+                                                  {
+                            <p class="card-text" style="font-weight: bold; color: black;">Highest bid was: @aukcija.trenutnaCijena.ToString("F2") KM</p>
+                        }
+
+
+                    }
+                    
+                         else
+                        {
+                            <p class="card-text" style="font-weight: bold; color: black;">Highest bid: Not yet available for bidding</p>
+                        }
+                    
 
                     @if (aukcije != null && aukcije.ContainsKey(item.umjetinaID) && aukcije[item.umjetinaID].status == Status.Finalizirana)
                     {
-                        <button class="btn btn-danger btn-sm mb-2" disabled>ZAVRŠENA</button>
+                        <button class="btn btn-strong-danger btn-sm mb-2" disabled>ZAVRŠENA</button>
+
                     }
                     else
                     {
@@ -40,11 +65,20 @@
                            class="btn btn-sm custom-bid-btn mb-2">BID</a>
                     }
 
-                    @if (User.IsInRole("Kriticar"))
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.umjetinaID"
-                           class="btn btn-sm custom-postavi-btn mb-2">Postavi početnu cijenu</a>
-                    }
+              @if (User.IsInRole("Kriticar") && 
+    !(aukcije != null && aukcije.ContainsKey(item.umjetinaID) && aukcije[item.umjetinaID].status == Status.Finalizirana))
+{
+    if (item.pocetnaCijena != null && item.pocetnaCijena > 0)
+    {
+        <p class="text-success fw-bold mb-2">Početna cijena postavljena!</p>
+    }
+    else
+    {
+        <a asp-action="Edit" asp-route-id="@item.umjetinaID"
+           class="btn btn-sm custom-postavi-btn mb-2">Postavi početnu cijenu</a>
+    }
+}
+
 
                     <a asp-action="Details" asp-route-id="@item.umjetinaID"
                        class="btn btn-link d-block mt-1">Detalji</a>
@@ -113,8 +147,17 @@
             text-decoration: underline;
             color: #3f1f7a;
         }
+      
+
 
     .card-footer {
         font-size: 14px;
     }
+
+    .btn-strong-danger {
+    background-color: #ff0001 !important; /* prava jaka crvena */
+    border-color: #cc0001 !important;
+    color: white !important; /* crna slova */
+    font-weight: bold;
+}
 </style>

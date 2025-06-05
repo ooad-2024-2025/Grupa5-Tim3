@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,27 +26,38 @@ namespace Grupa5Tim3.Controllers
         // GET: Umjetninas
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Umjetnina.ToListAsync());
+            var umjetnine = await _context.Umjetnina.ToListAsync(); 
+
+            var aukcije = await _context.Aukcija
+                .GroupBy(a => a.umjetninaID)
+                .Select(g => g.OrderByDescending(a => a.zavrsetakAukcije).FirstOrDefault())
+                .ToDictionaryAsync(a => a.umjetninaID, a => a);
+
+            ViewBag.Aukcije = aukcije;
+
+            return View(umjetnine);
         }
 
         // GET: Umjetninas/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var umjetnina = await _context.Umjetnina
-                .FirstOrDefaultAsync(m => m.umjetinaID == id);
+            var umjetnina = await _context.Umjetnina.FindAsync(id);
             if (umjetnina == null)
-            {
                 return NotFound();
-            }
+
+            // Dohvati najnoviju aukciju za tu umjetninu (ako postoji)
+            var aukcija = await _context.Aukcija
+                .Where(a => a.umjetninaID == id)
+                .OrderByDescending(a => a.zavrsetakAukcije)
+                .FirstOrDefaultAsync();
+
+            ViewBag.Aukcija = aukcija;
 
             return View(umjetnina);
         }
-
         // GET: Umjetninas/Create
         // GET: Umjetnina/Create
         [Authorize(Roles = "Administrator")]
@@ -101,6 +113,14 @@ namespace Grupa5Tim3.Controllers
             {
                 return NotFound();
             }
+
+            
+            if (User.IsInRole("Kriticar") && umjetnina.pocetnaCijena != null && umjetnina.pocetnaCijena > 0)
+            {
+               
+               return RedirectToAction("Index");
+            }
+
             return View(umjetnina);
         }
 
@@ -147,6 +167,12 @@ namespace Grupa5Tim3.Controllers
                         bool jeNovaCijena = umjetnina.pocetnaCijena.HasValue
                             && umjetnina.pocetnaCijena > 0
                             && (existingUmjetnina.pocetnaCijena != umjetnina.pocetnaCijena);
+                        if (existingUmjetnina.pocetnaCijena != null && existingUmjetnina.pocetnaCijena > 0)
+                        {
+                           
+                            ModelState.AddModelError(string.Empty, "Početna cijena je već postavljena i ne može se mijenjati.");
+                            return View(umjetnina);
+                        }
 
                         existingUmjetnina.pocetnaCijena = umjetnina.pocetnaCijena;
 

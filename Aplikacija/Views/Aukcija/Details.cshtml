@@ -16,12 +16,25 @@
             <p class="card-text"><strong>Trenutna cijena:</strong> @Model.trenutnaCijena</p>
             <p class="card-text"><strong>Početak aukcije:</strong> @Model.pocetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
             <p class="card-text"><strong>Završetak aukcije:</strong> @Model.zavrsetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
-            <p class="card-text"><strong>Status:</strong> @Model.status</p>
+            @{
+                Status status = @Model.status;
+                string backgroundColor = status == Status.Aktivna ? "#28a745" : "#dc3545"; 
+            }
+
+            <p class="card-text">
+                <strong>Status:</strong>
+                <span style="background-color:@backgroundColor; color:white; font-weight:bold; padding:4px 12px; border-radius:6px; margin-left:10px;">
+                    @status
+                </span>
+            </p>
             <a asp-action="Bid" asp-route-id="@Model.umjetninaID"
                class="btn btn-sm"
                style="background-color: #B39DDB; color: white; border-radius: 6px; padding: 8px 16px; font-weight: 600;">
                 BID
             </a>
+            <div class="mt-4 text-center">
+                <a asp-action="Index">Nazad na listu</a>
+            </div>
              
             </div>
         </div>

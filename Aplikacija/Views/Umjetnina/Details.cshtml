@@ -6,12 +6,41 @@
 <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 18px;
+        background-color: #f3e8ff;
     }
 
-    h3 {
-        font-size: 28px;
+    .umjetnina-container {
+        background-color: #f5e9ff;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 1000px;
+        margin: 40px auto;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .umjetnina-title {
+        font-size: 36px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .umjetnina-label {
         font-weight: 600;
+        font-size: 18px;
+        color: #333;
+    }
+
+    .umjetnina-value {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
+
+    .umjetnina-img {
+        max-height: 350px;
+        border-radius: 12px;
+        object-fit: cover;
+        width: 100%;
     }
 
     .custom-purple-btn {
@@ -19,84 +48,93 @@
         color: white;
         font-weight: bold;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         padding: 12px 24px;
         font-size: 18px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         transition: background-color 0.3s ease;
     }
 
         .custom-purple-btn:hover {
             background-color: #b49ee0;
-            color: white;
         }
 
     .text-justify {
         text-align: justify;
     }
-
-    .arrow {
-        font-size: 30px;
-        cursor: pointer;
-        user-select: none;
-        color: #555;
-    }
-
-    .info-label {
-        font-weight: 600;
-    }
-
-    .card {
-        font-size: 18px;
-    }
 </style>
 
-<div class="container mt-4">
-    <div class="card shadow p-4">
-        <div class="row">
-           
-            <div class="col-md-4 d-flex flex-column align-items-center justify-content-center">
-                <div class="mb-2">
-                    <span class="arrow">&#x276E;</span> 
-                </div>
-                @if (!string.IsNullOrEmpty(Model.SlikaPath))
-                {
-                    <img src="@Model.SlikaPath" alt="Slika umjetnine" class="img-fluid rounded" style="max-height: 350px;" />
-                }
-                else
-                {
-                    <p>(Nema slike)</p>
-                }
-                <div class="mt-2">
-                    <span class="arrow">&#x276F;</span> 
-                </div>
+<div class="umjetnina-container">
+    <div class="row">
+        <!-- Lijeva strana: slika -->
+        <div class="col-md-5 mb-4 text-center">
+            @if (!string.IsNullOrEmpty(Model.SlikaPath))
+            {
+                <img src="@Model.SlikaPath" alt="Slika umjetnine" class="umjetnina-img" />
+            }
+            else
+            {
+                <p>(Nema slike)</p>
+            }
+        </div>
+
+        <!-- Desna strana: detalji -->
+        <div class="col-md-7">
+            <h2 class="umjetnina-title">@Model.naziv</h2>
+
+            <div class="umjetnina-value"><span class="umjetnina-label">Autor:</span> @Model.autor</div>
+            <div class="umjetnina-value"><span class="umjetnina-label">Period:</span> @Model.period</div>
+            <div class="umjetnina-value"><span class="umjetnina-label">Tehnika:</span> @Model.tehnika</div>
+@if (ViewBag.Aukcija != null)
+{
+    <div class="umjetnina-value">
+        <span class="umjetnina-label">Početak aukcije:</span>
+        <span style="color: green; font-weight: bold;">
+            @((DateTime)ViewBag.Aukcija.pocetakAukcije)
+        </span>
+    </div>
+    <div class="umjetnina-value">
+        <span class="umjetnina-label">Kraj aukcije:</span>
+        <span style="color: red; font-weight: bold;">
+            @((DateTime)ViewBag.Aukcija.zavrsetakAukcije)
+        </span>
+    </div>
+
+    <div class="umjetnina-value" style="margin-top: 10px;">
+        <span class="umjetnina-label">Status aukcije:</span>
+        @if (ViewBag.Aukcija.status == Status.Aktivna)
+        {
+            <span style="background-color:#28a745; color:white; font-weight:bold; padding:4px 12px; border-radius:6px; margin-left:10px;">
+                Aktivna
+            </span>
+        }
+        else
+        {
+            <span style="background-color:#dc3545; color:white; font-weight:bold; padding:4px 12px; border-radius:6px; margin-left:10px;">
+                Finalizirana
+            </span>
+        }
+    </div>
+}
+else
+{
+    <div class="umjetnina-value">
+        <em>Nema aktivne aukcije za ovu umjetninu.</em>
+    </div>
+}
+
+
+            <div class="mt-4">
+                <p class="umjetnina-label">Opis:</p>
+                <p class="text-justify">@Model.opis</p>
             </div>
 
-          
-            <div class="col-md-8">
-                <h3 class="text-center mb-4">"@Model.naziv"</h3>
-
-                <p><span class="info-label">Artist:</span> @Model.autor</p>
-                <p><span class="info-label">Created:</span> @Model.datum</p>
-                <p><span class="info-label">Style:</span> @Model.period</p>
-               
-                
-
-                <p class="mt-4"><span class="info-label">Description:</span></p>
-                <p class="text-justify">
-                    @Model.opis
-                </p>
-
-                <div class="d-flex justify-content-end mt-4">
-                    @if (User.IsInRole("Administrator"))
-                    {
-                        <a asp-action="Edit" asp-route-id="@Model?.umjetinaID" class="btn btn-outline-primary me-2">Edit this post</a>
-                        <a asp-action="Delete" asp-route-id="@Model?.umjetinaID" class="btn btn-danger me-2">Delete post</a>
-                    }
-                    
-             
+            @if (User.IsInRole("Administrator"))
+            {
+                <div class="mt-4 d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model?.umjetinaID" class="custom-purple-btn">Uredi</a>
+                    <a asp-action="Delete" asp-route-id="@Model?.umjetinaID" class="btn btn-danger">Obriši</a>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>
