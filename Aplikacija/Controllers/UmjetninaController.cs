@@ -29,7 +29,16 @@ namespace Grupa5Tim3.Controllers
         // GET: Umjetnina
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Umjetnina.ToListAsync());
+            var umjetnine = await _context.Umjetnina.ToListAsync();
+
+            var aukcije = await _context.Aukcija
+                .GroupBy(a => a.umjetninaID)
+                .Select(g => g.OrderByDescending(a => a.zavrsetakAukcije).FirstOrDefault())
+                .ToDictionaryAsync(a => a.umjetninaID, a => a);
+
+            ViewBag.Aukcije = aukcije;
+
+            return View(umjetnine);
         }
 
         // GET: Umjetnina/Details/5

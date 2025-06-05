@@ -23,11 +23,18 @@
                     <button type="submit" class="btn" style="background-color: #D6C4F2; color: black;">BID</button>
                 </form>
             }
-            else
+            else if(Model.status==Status.Finalizirana)
             {
                 <div class="alert alert-info mt-4">
                     Aukcija je završena.
                 </div>
+            }
+            else
+            {
+                <div class="alert alert-info mt-4">
+                    Aukcija je otkazana.
+                </div>
+                
             }
 
             <a asp-action="Index" class="btn btn-secondary mt-3">Nazad na aukcije</a>

@@ -1,36 +1,65 @@
-﻿@model IEnumerable<Grupa5Tim3.Models.Aukcija>
+﻿<div class="row">
 
-@{
-    ViewData["Title"] = "Aukcije";
-}
+    @if (User.IsInRole("Administrator"))
+    {
+        <div class="col-12 mb-4">
+            <a asp-action="Create" class="btn btn-success">Add auction</a>
+        </div>
+    }
 
-<h1 class="mb-4">Aukcije</h1>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary mb-4">Kreiraj novu aukciju</a>
-</p>
-
-<div class="row">
     @foreach (var item in Model)
     {
+        if (item.status == Status.Finalizirana)
+        {
+            continue;
+        }
+
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm">
+
+                <div style="background-color: #EDE7F6; padding: 10px 15px; border-top-left-radius: .25rem; border-top-right-radius: .25rem;">
+                    <strong style="
+                                color: #5E35B1;
+                                font-size: 1.25rem;
+                                font-weight: 600;
+                                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                text-transform: uppercase;
+                                letter-spacing: 1.5px;">
+                        Aukcija ID: @item.AukcijaID
+                    </strong>
+                </div>
+
                 <div class="card-body">
-                    <h5 class="card-title">Aukcija ID: @item.AukcijaID</h5>
                     <p class="card-text"><strong>Umjetnina ID:</strong> @item.umjetninaID</p>
                     <p class="card-text"><strong>Trenutna cijena:</strong> @item.trenutnaCijena</p>
                     <p class="card-text"><strong>Početak:</strong> @item.pocetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
                     <p class="card-text"><strong>Završetak:</strong> @item.zavrsetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
-                    <p class="card-text"><strong>Status:</strong> @item.status</p>
-                    <p class="card-text"><strong>Kupac ID:</strong> @(string.IsNullOrEmpty(item.kupacID) ? "Nema" : item.kupacID)</p>
-
+                    <p class="card-text">
+                        <strong>Status:</strong>
+                        <span class="fw-bold @(item.status == Status.Aktivna? "text-success" : "text-danger")">
+                            @item.status
+                        </span>
+                    </p>
 
                 </div>
+
+                @if (User.IsInRole("Administrator"))
+                {
+                    <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
+                        <a asp-action="Edit" asp-route-id="@item.AukcijaID" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.AukcijaID" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </div>
+                }
+
                 <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
-                    <a asp-action="Edit" asp-route-id="@item.AukcijaID" class="btn btn-sm btn-outline-primary">Edit</a>
                     <a asp-action="Details" asp-route-id="@item.AukcijaID" class="btn btn-sm btn-outline-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.AukcijaID" class="btn btn-sm btn-outline-danger">Delete</a>
+                    <a asp-action="Bid" asp-route-id="@item.umjetninaID"
+                       class="btn btn-sm"
+                       style="background-color: #B39DDB; color: white; border-radius: 6px;">
+                        BID!
+                    </a>
                 </div>
+
             </div>
         </div>
     }

@@ -39,15 +39,26 @@ namespace Grupa5Tim3.Controllers
 
             var aukcija = await _context.Aukcija
                 .FirstOrDefaultAsync(m => m.AukcijaID == id);
+
             if (aukcija == null)
             {
                 return NotFound();
             }
 
+           
+            var slikaPath = await _context.Umjetnina
+                .Where(u => u.umjetinaID == aukcija.umjetninaID)
+                .Select(u => u.SlikaPath)
+                .FirstOrDefaultAsync();
+
+            ViewBag.SlikaPath = slikaPath;
+
             return View(aukcija);
         }
 
-        // GET: Aukcija/Create
+
+
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -98,6 +109,8 @@ namespace Grupa5Tim3.Controllers
             {
                 return NotFound();
             }
+
+
             return View(aukcija);
         }
 

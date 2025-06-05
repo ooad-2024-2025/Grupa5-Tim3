@@ -1,54 +1,29 @@
 ﻿@model Grupa5Tim3.Models.Aukcija
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalji aukcije";
 }
 
-<h1>Details</h1>
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-sm" style="width: 24rem; border-radius: 16px;">
+        <div class="card-body text-center">
+            <h4 class="card-title mb-3"><strong>Detalji aukcije</strong></h4>
 
-<div>
-    <h4>Aukcija</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.umjetninaID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.umjetninaID)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.trenutnaCijena)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.trenutnaCijena)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.pocetakAukcije)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.pocetakAukcije)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.zavrsetakAukcije)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.zavrsetakAukcije)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.kupacID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.kupacID)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AukcijaID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+            <img src="@Url.Content(ViewBag.SlikaPath)" alt="Slika umjetnine"
+                 class="img-fluid mb-3" style="max-height: 300px; object-fit: cover;" />
+
+            <p class="card-text"><strong>Umjetnina ID:</strong> @Model.umjetninaID</p>
+            <p class="card-text"><strong>Trenutna cijena:</strong> @Model.trenutnaCijena</p>
+            <p class="card-text"><strong>Početak aukcije:</strong> @Model.pocetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
+            <p class="card-text"><strong>Završetak aukcije:</strong> @Model.zavrsetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
+            <p class="card-text"><strong>Status:</strong> @Model.status</p>
+            <a asp-action="Bid" asp-route-id="@Model.umjetninaID"
+               class="btn btn-sm"
+               style="background-color: #B39DDB; color: white; border-radius: 6px; padding: 8px 16px; font-weight: 600;">
+                BID
+            </a>
+             
+            </div>
+        </div>
+    </div>
 </div>

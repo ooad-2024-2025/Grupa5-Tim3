@@ -4,52 +4,60 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<div class="container py-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 700px; border-radius: 20px;">
+        <h2 class="mb-4 text-center fw-bold">Uredi aukciju</h2>
 
-<h4>Aukcija</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="AukcijaID" />
-            <div class="form-group">
-                <label asp-for="umjetninaID" class="control-label"></label>
-                <input asp-for="umjetninaID" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="umjetninaID" class="form-label fw-bold">Umjetnina</label>
+                <input asp-for="umjetninaID" class="form-control rounded-pill" />
                 <span asp-validation-for="umjetninaID" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="trenutnaCijena" class="control-label"></label>
-                <input asp-for="trenutnaCijena" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="trenutnaCijena" class="form-label fw-bold">Trenutna cijena</label>
+                <input asp-for="trenutnaCijena" class="form-control rounded-pill" />
                 <span asp-validation-for="trenutnaCijena" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="pocetakAukcije" class="control-label"></label>
-                <input asp-for="pocetakAukcije" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="pocetakAukcije" class="form-label fw-bold">Početak aukcije</label>
+                <input asp-for="pocetakAukcije" class="form-control rounded-pill" type="datetime-local" />
                 <span asp-validation-for="pocetakAukcije" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="zavrsetakAukcije" class="control-label"></label>
-                <input asp-for="zavrsetakAukcije" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="zavrsetakAukcije" class="form-label fw-bold">Završetak aukcije</label>
+                <input asp-for="zavrsetakAukcije" class="form-control rounded-pill" type="datetime-local" />
                 <span asp-validation-for="zavrsetakAukcije" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="status" class="control-label"></label>
-                <select asp-for="status" class="form-control"></select>
+
+            <div class="mb-4">
+                <label asp-for="status" class="form-label fw-bold">Status aukcije</label>
+                <select asp-for="status" class="form-control rounded-pill">
+                    <option value="Aktivna">Aktivna</option>
+                    <option value="Otkazana">Otkazana</option>
+                </select>
                 <span asp-validation-for="status" class="text-danger"></span>
             </div>
-          
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-primary rounded-pill fw-bold">Spremi</button>
             </div>
         </form>
+
+        <div class="text-center">
+            <a asp-action="Index" class="text-decoration-none">← Nazad na listu</a>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
