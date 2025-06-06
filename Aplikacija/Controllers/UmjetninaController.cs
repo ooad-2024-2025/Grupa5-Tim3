@@ -39,6 +39,7 @@ namespace Grupa5Tim3.Controllers
         }
 
         // GET: Umjetninas/Details/5
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -61,6 +62,7 @@ namespace Grupa5Tim3.Controllers
         // GET: Umjetninas/Create
         // GET: Umjetnina/Create
         [Authorize(Roles = "Administrator")]
+        [Authorize(Policy = "ExcludeKriticar")]
         public IActionResult Create()
         {
             return View();
@@ -71,6 +73,7 @@ namespace Grupa5Tim3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "ExcludeKriticar")]
 
         public async Task<IActionResult> Create([Bind("umjetinaID,naziv,autor,period,datum,tehnika,pocetnaCijena,opis")] Umjetnina umjetnina, IFormFile Slika)
         {
@@ -229,6 +232,7 @@ namespace Grupa5Tim3.Controllers
         }
 
         // GET: Umjetninas/Delete/5
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

@@ -54,18 +54,25 @@
                         }
                     
 
-                    @if (aukcije != null && aukcije.ContainsKey(item.umjetinaID) && aukcije[item.umjetinaID].status == Status.Finalizirana)
-                    {
-                        <button class="btn btn-strong-danger btn-sm mb-2" disabled>ZAVRŠENA</button>
+              @if (aukcije != null && aukcije.ContainsKey(item.umjetinaID) && aukcije[item.umjetinaID].status == Status.Finalizirana)
+{
+    <button class="btn btn-strong-danger btn-sm mb-2" disabled>ZAVRŠENA</button>
+}
+else
+{
+    if (!User.IsInRole("Kriticar"))
+    {
+        <a asp-controller="Aukcija" asp-action="Bid" asp-route-id="@item.umjetinaID"
+           class="btn btn-sm custom-bid-btn mb-2">BID</a>
+    }
+}
 
-                    }
-                    else
-                    {
-                        <a asp-controller="Aukcija" asp-action="Bid" asp-route-id="@item.umjetinaID"
-                           class="btn btn-sm custom-bid-btn mb-2">BID</a>
-                    }
-
-              @if (User.IsInRole("Kriticar") && 
+@if (!User.IsInRole("Kriticar"))
+{
+    <a asp-action="Details" asp-route-id="@item.umjetinaID"
+       class="btn btn-link d-block mt-1">Detalji</a>
+}
+ @if (User.IsInRole("Kriticar") && 
     !(aukcije != null && aukcije.ContainsKey(item.umjetinaID) && aukcije[item.umjetinaID].status == Status.Finalizirana))
 {
     if (item.pocetnaCijena != null && item.pocetnaCijena > 0)
@@ -80,8 +87,6 @@
 }
 
 
-                    <a asp-action="Details" asp-route-id="@item.umjetinaID"
-                       class="btn btn-link d-block mt-1">Detalji</a>
                 </div>
 
                 @if (User.IsInRole("Administrator"))

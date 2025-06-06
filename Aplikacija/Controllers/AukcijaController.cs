@@ -24,12 +24,14 @@ namespace Grupa5Tim3.Controllers
         }
 
         // GET: Aukcija
+
         public async Task<IActionResult> Index()
         {
             return View(await _context.Aukcija.ToListAsync());
         }
 
         // GET: Aukcija/Details/5
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -70,6 +72,7 @@ namespace Grupa5Tim3.Controllers
         // POST: Aukcija/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> Create([Bind("AukcijaID,umjetninaID,trenutnaCijena,pocetakAukcije,zavrsetakAukcije,status")] Aukcija aukcija)
         {
             if (ModelState.IsValid)
@@ -97,6 +100,7 @@ namespace Grupa5Tim3.Controllers
         }
 
         // GET: Aukcija/Edit/5
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -119,6 +123,7 @@ namespace Grupa5Tim3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> Edit(int id, [Bind("AukcijaID,umjetninaID,trenutnaCijena,pocetakAukcije,zavrsetakAukcije,status")] Aukcija aukcija)
         {
             if (id != aukcija.AukcijaID)
@@ -164,6 +169,7 @@ namespace Grupa5Tim3.Controllers
 
 
         // GET: Aukcija/Delete/5
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -182,8 +188,10 @@ namespace Grupa5Tim3.Controllers
         }
 
         // POST: Aukcija/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var aukcija = await _context.Aukcija.FindAsync(id);
@@ -196,6 +204,7 @@ namespace Grupa5Tim3.Controllers
             return RedirectToAction(nameof(Index));
         }
         [Authorize]
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> Bid(int id)
         {
             var aukcija = await _context.Aukcija
@@ -208,7 +217,7 @@ namespace Grupa5Tim3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Policy = "ExcludeKriticar")]
         public async Task<IActionResult> Bid(int id, double novaCijena)
         {
             var aukcija = await _context.Aukcija.FindAsync(id);

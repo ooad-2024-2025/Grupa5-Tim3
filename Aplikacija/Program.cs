@@ -12,6 +12,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";
 });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ExcludeKriticar", policy =>
+        policy.RequireAssertion(context =>
+            !context.User.IsInRole("Kriticar")
+        ));
+});
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
