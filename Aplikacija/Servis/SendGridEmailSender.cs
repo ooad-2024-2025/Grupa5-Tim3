@@ -59,4 +59,26 @@ public class SendGridEmailSender
         return verificationCode; 
     }
 
+    public async Task SendQrCodeEmailAsync(string email, string subject, string htmlMessage, byte[] qrCodeBytes)
+    {
+        var client = new SendGridClient(_options.ApiKey);
+        var from = new EmailAddress("lamijabojic@gmail.com", "Artevo");
+        var to = new EmailAddress(email);
+
+        var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent: "", htmlContent: htmlMessage);
+
+        // Dodaj QR kod kao attachment
+        msg.AddAttachment("racun_qr.png", Convert.ToBase64String(qrCodeBytes), "image/png", "attachment");
+
+        var response = await client.SendEmailAsync(msg);
+
+        Console.WriteLine($"Status Code: {response.StatusCode}");
+        if (response.StatusCode != System.Net.HttpStatusCode.Accepted)
+        {
+            var responseBody = await response.Body.ReadAsStringAsync();
+            Console.WriteLine($"Failed to send email. Response body: {responseBody}");
+        }
+    }
+
+
 }

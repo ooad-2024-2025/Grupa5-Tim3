@@ -13,7 +13,10 @@ namespace Grupa5Tim3.Models
         public DateTime zavrsetakAukcije { get; set; }
         [EnumDataType(typeof(Status))]    public Status status { get; set; }
         public String ?kupacID { get; set; }
-       
+
+        [ForeignKey("umjetninaID")]
+        public virtual Umjetnina? Umjetnina { get; set; }
+
         public Aukcija() { }
     }
 }
