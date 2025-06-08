@@ -24,11 +24,27 @@ namespace Grupa5Tim3.Controllers
         }
 
         // GET: Umjetninas
-        public async Task<IActionResult> Index(List<string> autori, List<string> tehnike, List<string> periodi, bool? samoAktivneAukcije)
+        public async Task<IActionResult> Index(
+       List<string> autori,
+       List<string> tehnike,
+       List<string> periodi,
+       int? auctionStatusIndex,
+       string search)
         {
             var query = _context.Umjetnina.AsQueryable();
 
-            // Dodaj filtriranje
+            // Search tekst - pretraga po više polja
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var loweredSearch = search.ToLower();
+                query = query.Where(u =>
+                    u.naziv.ToLower().Contains(loweredSearch) ||
+                    u.autor.ToLower().Contains(loweredSearch) ||
+                    u.tehnika.ToLower().Contains(loweredSearch) ||
+                    u.period.ToLower().Contains(loweredSearch));
+            }
+
+            // Filtriranje po autorima, tehnikama i periodima
             if (autori != null && autori.Any())
                 query = query.Where(u => autori.Contains(u.autor));
 
@@ -38,27 +54,65 @@ namespace Grupa5Tim3.Controllers
             if (periodi != null && periodi.Any())
                 query = query.Where(u => periodi.Contains(u.period));
 
-            var umjetnine = await query.ToListAsync();
-
-            var aukcije = await _context.Aukcija
+            // Dobavljanje zadnje aukcije po umjetnini
+            var aukcijeDict = await _context.Aukcija
                 .GroupBy(a => a.umjetninaID)
                 .Select(g => g.OrderByDescending(a => a.zavrsetakAukcije).FirstOrDefault())
                 .ToDictionaryAsync(a => a.umjetninaID, a => a);
 
-           
+            // Auction status slider obrada
+            var statusMap = new[] { "All", "Active", "Finalized", "Canceled", "Pending" };
+            string selectedStatus = auctionStatusIndex.HasValue && auctionStatusIndex.Value >= 0 && auctionStatusIndex.Value < statusMap.Length
+                ? statusMap[auctionStatusIndex.Value]
+                : "All"; // defaultno na "All"
 
-            ViewBag.Aukcije = aukcije;
+            if (selectedStatus != "All")
+            {
+                var statusMapping = new Dictionary<string, Status>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Active", Status.Aktivna },
+            { "Finalized", Status.Finalizirana },
+            { "Canceled", Status.Otkazana }
+        };
 
-            // Za checkboxes
+                var validUmjetninaIds = new HashSet<int>();
+
+                if (selectedStatus == "Pending")
+                {
+                    var umjetnineSaAukcijomIds = aukcijeDict.Keys.ToHashSet();
+
+                    var umjetnineBezAukcije = await _context.Umjetnina
+                        .Where(u => !umjetnineSaAukcijomIds.Contains(u.umjetinaID))
+                        .Select(u => u.umjetinaID)
+                        .ToListAsync();
+
+                    validUmjetninaIds.UnionWith(umjetnineBezAukcije);
+                }
+                else if (statusMapping.TryGetValue(selectedStatus, out var statusEnum))
+                {
+                    validUmjetninaIds.UnionWith(
+                        aukcijeDict
+                            .Where(a => a.Value.status == statusEnum)
+                            .Select(a => a.Key)
+                    );
+                }
+
+                query = query.Where(u => validUmjetninaIds.Contains(u.umjetinaID));
+            }
+
+            var umjetnine = await query.ToListAsync();
+
+            // ViewBag podaci
+            ViewBag.Aukcije = aukcijeDict;
             ViewBag.Autori = await _context.Umjetnina.Select(u => u.autor).Distinct().ToListAsync();
             ViewBag.Tehnike = await _context.Umjetnina.Select(u => u.tehnika).Distinct().ToListAsync();
             ViewBag.Periodi = await _context.Umjetnina.Select(u => u.period).Distinct().ToListAsync();
 
-            // Sačuvaj izabrano
             ViewBag.SelectedAutori = autori ?? new List<string>();
             ViewBag.SelectedTehnike = tehnike ?? new List<string>();
             ViewBag.SelectedPeriodi = periodi ?? new List<string>();
-
+            ViewBag.SelectedAuctionStatusIndex = auctionStatusIndex;
+            ViewBag.Search = search;
 
             return View(umjetnine);
         }

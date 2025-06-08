@@ -18,10 +18,9 @@
                 <span asp-validation-for="umjetninaID" class="text-danger"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="trenutnaCijena" class="form-label fw-bold">Trenutna cijena</label>
-                <input asp-for="trenutnaCijena" class="form-control rounded-pill" />
-                <span asp-validation-for="trenutnaCijena" class="text-danger"></span>
+            <div class="form-group mb-3">
+                <label asp-for="trenutnaCijena" class="form-label">Trenutna cijena</label>
+                <input asp-for="trenutnaCijena" class="form-control" readonly />
             </div>
 
             <div class="mb-3">

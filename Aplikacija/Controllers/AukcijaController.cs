@@ -77,25 +77,42 @@ namespace Grupa5Tim3.Controllers
         {
             if (ModelState.IsValid)
             {
-              
+                // ✅ Dohvati umjetninu iz baze
+                var umjetnina = await _context.Umjetnina.FindAsync(aukcija.umjetninaID);
+
+                // ✅ Provjeri da li postoji i da li se cijene poklapaju
+                if (umjetnina == null)
+                {
+                    ModelState.AddModelError("", "Odabrana umjetnina ne postoji.");
+                    return View(aukcija);
+                }
+
+                if (aukcija.trenutnaCijena != umjetnina.pocetnaCijena)
+                {
+                    ModelState.AddModelError("trenutnaCijena", "Trenutna cijena mora biti jednaka početnoj cijeni umjetnine.");
+                    return View(aukcija);
+                }
+
                 var userId = _context.Users
                     .FirstOrDefault(u => u.UserName == User.Identity.Name)?.Id;
 
                 if (userId == null)
                 {
-                    return Forbid(); 
+                    return Forbid();
                 }
 
                 aukcija.kupacID = userId;
 
                 _context.Add(aukcija);
                 await _context.SaveChangesAsync();
+
                 BackgroundJob.Schedule<AukcijaService>(
                     service => service.ZatvoriAukciju(aukcija.AukcijaID),
                     aukcija.zavrsetakAukcije - DateTime.Now);
 
                 return RedirectToAction(nameof(Index));
             }
+
             return View(aukcija);
         }
 

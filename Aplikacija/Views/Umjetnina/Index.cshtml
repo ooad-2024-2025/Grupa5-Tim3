@@ -1,141 +1,175 @@
 ﻿@model IEnumerable<Grupa5Tim3.Models.Umjetnina>
 
 @{
-    ViewData["Title"] = "Dostupne umjetnine";
+    ViewData["Title"] = "Available Artworks";
     var aukcije = ViewBag.Aukcije as Dictionary<int, Grupa5Tim3.Models.Aukcija>;
 }
+
+<div class="container mb-3 d-flex justify-content-center">
+    <form class="d-flex w-50" asp-controller="Umjetnina" asp-action="Index" method="get">
+        <input class="form-control rounded-pill me-2" type="search" name="search" placeholder="Search artworks..." style="min-width: 180px;" value="@ViewBag.Search">
+        <button class="btn rounded-pill" type="submit" style="background-color: #d9b3ff; color: #5d3a9b; border: none;">Search</button>
+    </form>
+</div>
 
 @if (User.IsInRole("Administrator"))
 {
     <div class="text-end mb-3">
-    <a asp-action="Create" class="btn" style="background-color: #D8BFD8; color: black;">Add post</a>
-</div>
+        <a asp-action="Create" class="btn" style="background-color: #D8BFD8; color: black;">Add Post</a>
+    </div>
 }
 
-<div class="filters-div">
-    <button class="custom-bid-btn" onclick="openSidebar()">Filters</button>
+<div class="filters-div" style="margin: 20px;">
+    <button class="custom-bid-btn" onclick="openSidebar()" style="background-color: #e1c8ff; border: none; border-radius: 12px; padding: 8px 18px; font-weight: 500;">Filters</button>
 </div>
 
-<!-- Sliding Sidebar -->
+<!-- Sidebar -->
 <div id="filterSidebar" class="sidebar">
-    
-    <a href="javascript:void(0)" class="closebtn" onclick="closeSidebar()">&times;</a>
-    <h4 style="color:black; padding:10px;">Filters</h4>
-    <!-- Add filter controls here -->
-    <div style="padding: 10px; color:black;margin-left:20px;">
-       <form method="get" asp-controller="Umjetnina" asp-action="Index" id="filterForm">
-    <h5 style="margin-top:20px;">Authors</h5>
-    @foreach (var autor in (List<string>)ViewBag.Autori)
-    {
-        <div>
-            <input type="checkbox" name="autori" value="@autor"
-                   @(ViewBag.SelectedAutori.Contains(autor) ? "checked" : "") /> @autor
-        </div>
-    }
+    <a href="javascript:void(0)" onclick="closeSidebar()" class="closebtn">&times;</a>
+    <div style="padding: 20px 30px; color: #3a2e45;">
+        <h4>🎨 Filters</h4>
+        <form method="get" asp-controller="Umjetnina" asp-action="Index" id="filterForm">
 
-    <h5  style="margin-top:20px;">Techniques</h5>
-    @foreach (var tehnika in (List<string>)ViewBag.Tehnike)
-    {
-        <div>
-            <input type="checkbox" name="tehnike" value="@tehnika"
-                   @(ViewBag.SelectedTehnike.Contains(tehnika) ? "checked" : "") /> @tehnika
-        </div>
-    }
+            <h5>Authors</h5>
+            @foreach (var autor in (List<string>)ViewBag.Autori ?? new List<string>())
+            {
+                <div>
+                    <label>
+                        <input type="checkbox" name="autori" value="@autor"
+                               @(ViewBag.SelectedAutori?.Contains(autor) == true ? "checked" : "") />
+                        <span>@autor</span>
+                    </label>
+                </div>
+            }
 
-    <h5  style="margin-top:20px;">Periods</h5>
-    @foreach (var period in (List<string>)ViewBag.Periodi)
-    {
-        <div>
-            <input type="checkbox" name="periodi" value="@period"
-                   @(ViewBag.SelectedPeriodi.Contains(period) ? "checked" : "") /> @period
-        </div>
-    }
-    <br />
-    <br />
-    <button class="btn btn-light btn-sm" onclick="applyFilter()">Primijeni</button>
+            <h5>Techniques</h5>
+            @foreach (var tehnika in (List<string>)ViewBag.Tehnike ?? new List<string>())
+            {
+                <div>
+                    <label>
+                        <input type="checkbox" name="tehnike" value="@tehnika"
+                               @(ViewBag.SelectedTehnike?.Contains(tehnika) == true ? "checked" : "") />
+                        <span>@tehnika</span>
+                    </label>
+                </div>
+            }
 
-</form>
+            <h5>Periods</h5>
+            @foreach (var period in (List<string>)ViewBag.Periodi ?? new List<string>())
+            {
+                <div>
+                    <label>
+                        <input type="checkbox" name="periodi" value="@period"
+                               @(ViewBag.SelectedPeriodi?.Contains(period) == true ? "checked" : "") />
+                        <span>@period</span>
+                    </label>
+                </div>
+            }
+
+            <h5>Auction Status</h5>
+            <input type="range" id="auctionStatusSlider" name="auctionStatusIndex" min="0" max="4" value="0" oninput="updateStatusLabel(this.value)" class="form-range" />
+            <div>
+                <strong>Status:</strong> <span id="auctionStatusLabel">All</span>
+            </div>
+
+            <button type="submit" class="btn btn-outline-dark mt-4" style="background-color: #e1c8ff; border: none; border-radius: 8px; padding: 6px 20px; font-weight: 500;">Apply</button>
+        </form>
     </div>
 </div>
+
+<!-- Overlay -->
 <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+<script>
+    const statuses = ["All", "Active", "Finalized", "Canceled", "Pending"];
+    function openSidebar() {
+        document.getElementById("filterSidebar").style.width = "300px";
+        document.getElementById("overlay").style.display = "block";
+    }
+
+    function closeSidebar() {
+        document.getElementById("filterSidebar").style.width = "0";
+        document.getElementById("overlay").style.display = "none";
+    }
+
+    function updateStatusLabel(index) {
+        document.getElementById("auctionStatusLabel").textContent = statuses[index];
+    }
+
+    window.onload = function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const statusIndex = urlParams.get("auctionStatusIndex") || "0";
+        document.getElementById("auctionStatusSlider").value = statusIndex;
+        updateStatusLabel(statusIndex);
+    };
+</script>
 
 <div class="row">
     @foreach (var item in Model)
     {
+        var aukcija = aukcije != null && aukcije.ContainsKey(item.umjetinaID)
+        ? aukcije[item.umjetinaID]
+        : null;
+
         <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm"
-     data-autor="@item.autor?.ToLowerInvariant()"
-     data-cijena="@((aukcije != null && aukcije.ContainsKey(item.umjetinaID)) ? aukcije[item.umjetinaID].trenutnaCijena : item.pocetnaCijena ?? 0)">
-                @if (!string.IsNullOrEmpty(item.SlikaPath))
-                {
-                    <img src="@item.SlikaPath" class="card-img-top" style="height: 300px; object-fit: cover;" />
-                }
-                else
-                {
-                    <img src="~/images/placeholder.jpg" class="card-img-top" style="height: 300px; object-fit: cover;" />
-                }
+            <div class="card h-100 shadow-sm">
+                <img src="@(!string.IsNullOrEmpty(item.SlikaPath) ? item.SlikaPath : Url.Content("~/images/placeholder.jpg"))"
+                     class="card-img-top" style="height: 300px; object-fit: cover;" />
 
                 <div class="card-body text-center">
                     <h5 class="card-title">"@item.naziv"</h5>
                     <p class="card-text">@item.autor</p>
-                    @if (aukcije != null && aukcije.ContainsKey(item.umjetinaID))
-                       {
-                            var aukcija = aukcije[item.umjetinaID];
-                                     if (  aukcija.status==Status.Aktivna)
-                                         {
-                                             <p class="card-text" style="font-weight: bold; color: black;">Highest bid: @aukcija.trenutnaCijena.ToString("F2") KM</p>
 
-
-
-
-                                           } else if(aukcija.status==Status.Finalizirana
-                                           )
-                                                  {
-                            <p class="card-text" style="font-weight: bold; color: black;">Highest bid was: @aukcija.trenutnaCijena.ToString("F2") KM</p>
-                        }
-
-
+                    @if (aukcija != null)
+                    {
+                        <p class="card-text fw-bold text-black">
+                            @if (aukcija.status == Status.Aktivna)
+                            {
+                                <span>Highest bid: @aukcija.trenutnaCijena.ToString("F2") KM</span>
+                            }
+                            else if (aukcija.status == Status.Finalizirana)
+                            {
+                                <span>Highest bid was: @aukcija.trenutnaCijena.ToString("F2") KM</span>
+                            }
+                            else
+                            {
+                                <span>Status: @aukcija.status.ToString()</span>
+                            }
+                        </p>
                     }
-                    
-                         else
+                    else
+                    {
+                        <p class="card-text fw-bold text-black">Highest bid: Not yet available for bidding</p>
+                    }
+
+                    @if (aukcija?.status == Status.Finalizirana)
+                    {
+                        <button class="btn btn-strong-danger btn-sm mb-2" disabled>ENDED</button>
+                    }
+                    else if (aukcija?.status == Status.Aktivna && !User.IsInRole("Kriticar"))
+                    {
+                        <a asp-controller="Aukcija" asp-action="Bid" asp-route-id="@item.umjetinaID"
+                           class="btn btn-sm custom-bid-btn mb-2">BID!</a>
+                    }
+
+                    @if (!User.IsInRole("Kriticar"))
+                    {
+                        <a asp-action="Details" asp-route-id="@item.umjetinaID"
+                           class="btn btn-link d-block mt-1">Details</a>
+                    }
+
+                    @if (User.IsInRole("Kriticar") && aukcija?.status != Status.Finalizirana)
+                    {
+                        if (item.pocetnaCijena > 0)
                         {
-                            <p class="card-text" style="font-weight: bold; color: black;">Highest bid: Not yet available for bidding</p>
+                            <p class="text-success fw-bold mb-2">Starting price set!</p>
                         }
-                    
-
-              @if (aukcije != null && aukcije.ContainsKey(item.umjetinaID) && aukcije[item.umjetinaID].status == Status.Finalizirana)
-{
-    <button class="btn btn-strong-danger btn-sm mb-2" disabled>ZAVRŠENA</button>
-}
-else
-{
-    if (!User.IsInRole("Kriticar"))
-    {
-        <a asp-controller="Aukcija" asp-action="Bid" asp-route-id="@item.umjetinaID"
-           class="btn btn-sm custom-bid-btn mb-2">BID</a>
-    }
-}
-
-@if (!User.IsInRole("Kriticar"))
-{
-    <a asp-action="Details" asp-route-id="@item.umjetinaID"
-       class="btn btn-link d-block mt-1">Detalji</a>
-}
- @if (User.IsInRole("Kriticar") && 
-    !(aukcije != null && aukcije.ContainsKey(item.umjetinaID) && aukcije[item.umjetinaID].status == Status.Finalizirana))
-{
-    if (item.pocetnaCijena != null && item.pocetnaCijena > 0)
-    {
-        <p class="text-success fw-bold mb-2">Početna cijena postavljena!</p>
-    }
-    else
-    {
-        <a asp-action="Edit" asp-route-id="@item.umjetinaID"
-           class="btn btn-sm custom-postavi-btn mb-2">Postavi početnu cijenu</a>
-    }
-}
-
-
+                        else
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.umjetinaID"
+                               class="btn btn-sm custom-postavi-btn mb-2">Set starting price</a>
+                        }
+                    }
                 </div>
 
                 @if (User.IsInRole("Administrator"))
@@ -151,46 +185,55 @@ else
 </div>
 
 <style>
+    .sidebar {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        z-index: 1050;
+        top: 0;
+        left: 0;
+        background-color: #e6ccff;
+        overflow-x: hidden;
+        overflow-y: auto;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        transition: 0.4s;
+        padding-top: 60px;
+    }
+
+        .sidebar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: #b399ff;
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f0e6ff;
+        }
+
+    .closebtn {
+        position: absolute;
+        top: 10px;
+        right: 25px;
+        font-size: 36px;
+        color: #5a3472;
+        text-decoration: none;
+    }
 
     .overlay {
-    position: fixed;
-    display: none;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5); /* zatamnjenje */
-    z-index: 1049; /* odmah ispod sidebar-a (1050) */
-}
-
-    .sidebar {
-    height: 100%;
-    width: 0;
-    position: fixed;
-    z-index: 1050;
-    top: 0;
-    left: 0;
-    background-color: #e6ccff;
-    overflow-x: hidden;
-    transition: 0.4s;
-    padding-top: 60px;
-}
-
-.sidebar .closebtn {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 30px;
-    color: black;
-    cursor: pointer;
-}
-
-
-    .filters-div{
-        margin-left: 0px;
-        margin-bottom:20px;
-        margin-top:20px;
+        position: fixed;
+        display: none;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 1049;
     }
+
     .card {
         border-radius: 12px;
         overflow: hidden;
@@ -202,8 +245,8 @@ else
     }
 
     .card-text {
-        margin-bottom: 10px;
         font-size: 14px;
+        margin-bottom: 10px;
     }
 
     .custom-bid-btn {
@@ -241,52 +284,8 @@ else
             text-decoration: underline;
             color: #3f1f7a;
         }
-      
-
 
     .card-footer {
         font-size: 14px;
     }
-
-    .btn-strong-danger {
-    background-color: #ff0001 !important; /* prava jaka crvena */
-    border-color: #cc0001 !important;
-    color: white !important; /* crna slova */
-    font-weight: bold;
-}
 </style>
-
-@section Scripts {
-    <script>
-        function openSidebar() {
-            document.getElementById("filterSidebar").style.width = "250px";
-            document.getElementById("overlay").style.display = "block";
-        }
-
-        function closeSidebar() {
-            document.getElementById("filterSidebar").style.width = "0";
-            document.getElementById("overlay").style.display = "none";
-        }
-        function applyFilter() {
-    const autorFilter = document.getElementById("autorFilter").value.toLowerCase();
-    const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
-    const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Number.MAX_VALUE;
-
-    const cards = document.querySelectorAll('.card.h-100');
-
-    cards.forEach(card => {
-        const autor = card.getAttribute('data-autor');
-        const cijena = parseFloat(card.getAttribute('data-cijena'));
-
-        const autorMatch = autor.includes(autorFilter);
-        const cijenaMatch = cijena >= minPrice && cijena <= maxPrice;
-
-        if (autorMatch && cijenaMatch) {
-            card.parentElement.style.display = 'block';
-        } else {
-            card.parentElement.style.display = 'none';
-        }
-    });
-}
-    </script>
-}

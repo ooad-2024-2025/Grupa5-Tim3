@@ -1,0 +1,46 @@
+﻿@inject SignInManager<Korisnik> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+}
+
+<ul class="nav flex-column gap-2 py-3 px-2 rounded-4 shadow-sm" style="background-color: #f1e6ff; min-width: 220px;">
+    <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-pill px-3 py-2 @ManageNavPages.IndexNavClass(ViewContext)"
+           style="color: #5d3a9b;"
+           id="profile" asp-page="./Index">
+            👤 Profile
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-pill px-3 py-2 @ManageNavPages.EmailNavClass(ViewContext)"
+           style="color: #5d3a9b;"
+           id="email" asp-page="./Email">
+            📧 Email
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-pill px-3 py-2 @ManageNavPages.ChangePasswordNavClass(ViewContext)"
+           style="color: #5d3a9b;"
+           id="change-password" asp-page="./ChangePassword">
+            🔒 Password
+        </a>
+    </li>
+    @if (hasExternalLogins)
+    {
+        <li class="nav-item">
+            <a class="nav-link fw-semibold rounded-pill px-3 py-2 @ManageNavPages.ExternalLoginsNavClass(ViewContext)"
+               style="color: #5d3a9b;"
+               id="external-logins" asp-page="./ExternalLogins">
+                🌐 External Logins
+            </a>
+        </li>
+    }
+    <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-pill px-3 py-2 @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)"
+           style="color: #5d3a9b;"
+           id="two-factor" asp-page="./TwoFactorAuthentication">
+            🔐 Two-Factor Auth
+        </a>
+    </li>
+   
+</ul>
