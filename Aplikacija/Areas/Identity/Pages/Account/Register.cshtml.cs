@@ -68,12 +68,15 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, MinimumLength = 6)]
+            [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must contain at least 8 characters.")]
             [DataType(DataType.Password)]
+            [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$",
+    ErrorMessage = "Password must contain an uppercase letter, a lowercase letter, a number and a special character.")]
             public string Password { get; set; }
 
+
             [DataType(DataType.Password)]
-            [Compare("Password", ErrorMessage = "Lozinke se ne poklapaju.")]
+            [Compare("Password", ErrorMessage = "Passwords don't match.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -114,13 +117,13 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
 
             if (string.IsNullOrEmpty(expectedCode) || string.IsNullOrEmpty(expectedEmail))
             {
-                ModelState.AddModelError(string.Empty, "Verifikacija je istekla. Molimo pokušajte ponovo.");
+                ModelState.AddModelError(string.Empty, "Verification timed out. Please try again.");
                 return RedirectToPage("./Register");
             }
 
             if (VerificationCode != expectedCode)
             {
-                ModelState.AddModelError(string.Empty, "Kod nije tačan.");
+                ModelState.AddModelError(string.Empty, "Code not correct.");
                 ShowVerificationModal = true;
                 return Page();
             }
@@ -142,7 +145,7 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
 
             if (!result.Succeeded)
             {
-                ModelState.AddModelError(string.Empty, "Greška pri kreiranju korisnika nakon verifikacije.");
+                ModelState.AddModelError(string.Empty, "Error while creating a new user after verification.");
                 return Page();
             }
 
@@ -151,7 +154,7 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
 
             if (!confirmResult.Succeeded)
             {
-                ModelState.AddModelError(string.Empty, "Greška prilikom potvrde emaila.");
+                ModelState.AddModelError(string.Empty, "Error while confirming email.");
                 return Page();
             }
 
@@ -178,14 +181,14 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
             }
             catch
             {
-                throw new InvalidOperationException($"Greška pri kreiranju korisnika.");
+                throw new InvalidOperationException($"Error while creating a new user.");
             }
         }
 
         private IUserEmailStore<Korisnik> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
-                throw new NotSupportedException("User store ne podržava email.");
+                throw new NotSupportedException("User store doesn't support Email.");
             return (IUserEmailStore<Korisnik>)_userStore;
         }
     }

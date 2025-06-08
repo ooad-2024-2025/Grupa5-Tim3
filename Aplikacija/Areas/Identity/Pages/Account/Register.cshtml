@@ -1,30 +1,30 @@
 ﻿@page
 @model RegisterModel
 @{
-    ViewData["Title"] = "Registracija";
+    ViewData["Title"] = "Registration";
 }
 
 <div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
     <div class="p-5 shadow rounded" style="width: 600px; background-color: white;">
-        <h2 class="text-center mb-4">Registracija</h2>
+        <h2 class="text-center mb-4">Registration</h2>
 
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3" role="alert"></div>
 
             <div class="form-group mb-3">
-                <label asp-for="Input.ime" class="form-label">Ime</label>
-                <input asp-for="Input.ime" class="form-control" placeholder="Unesite ime" />
+                <label asp-for="Input.ime" class="form-label">First name</label>
+                <input asp-for="Input.ime" class="form-control" placeholder="Insert first name" />
                 <span asp-validation-for="Input.ime" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Input.prezime" class="form-label">Prezime</label>
-                <input asp-for="Input.prezime" class="form-control" placeholder="Unesite prezime" />
+                <label asp-for="Input.prezime" class="form-label">Last name</label>
+                <input asp-for="Input.prezime" class="form-control" placeholder="Insert last name" />
                 <span asp-validation-for="Input.prezime" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Input.datumRodjenja" class="form-label">Datum rođenja</label>
+                <label asp-for="Input.datumRodjenja" class="form-label">Birthday</label>
                 <input asp-for="Input.datumRodjenja" type="date" class="form-control" />
                 <span asp-validation-for="Input.datumRodjenja" class="text-danger"></span>
             </div>
@@ -36,24 +36,68 @@
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Input.Password" class="form-label">Lozinka</label>
-                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" />
+                <label asp-for="Input.Password" class="form-label">Password</label>
+                <input asp-for="Input.Password"
+                       class="form-control"
+                       autocomplete="new-password"
+                       id="passwordInput"
+                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
+                       title="Password must be at least 8 characters long, including an uppercase letter, lowercase letter, a number and a special character."
+                       oninput="validatePassword()" />
+
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+                <!-- Lista zahtjeva za šifru -->
+                <div id="passwordRequirements" class="mt-2 p-3 border rounded" style="background-color: #f8f9fa; font-size: 0.9em;">
+                    <h6 class="mb-2 text-muted">Password requirements:</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li id="length-req" class="requirement">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <span>At least 8 characters long</span>
+                        </li>
+                        <li id="lowercase-req" class="requirement">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <span>Contains lowercase letter (a-z)</span>
+                        </li>
+                        <li id="uppercase-req" class="requirement">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <span>Contains uppercase letter (A-Z)</span>
+                        </li>
+                        <li id="number-req" class="requirement">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <span>Contains number (0-9)</span>
+                        </li>
+                        <li id="special-req" class="requirement">
+                            <i class="fas fa-times text-danger me-2"></i>
+                            <span>Contains special character (!&#64;#$%^&amp;*)</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Input.ConfirmPassword" class="form-label">Potvrdi lozinku</label>
-                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" />
+                <label asp-for="Input.ConfirmPassword" class="form-label">Confirm password</label>
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password"
+                       id="confirmPasswordInput" oninput="validatePasswordMatch()" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+
+                <!-- Prikaz podudaranja šifara -->
+                <div id="passwordMatch" class="mt-2" style="display: none;">
+                    <div id="match-indicator" class="d-flex align-items-center">
+                        <i id="match-icon" class="fas fa-times text-danger me-2"></i>
+                        <span id="match-text">Passwords do not match</span>
+                    </div>
+                </div>
             </div>
 
-            <button id="registerSubmit" type="submit" class="btn w-100" style="background-color: #d6b3ff; color: black; font-weight: bold;">
-                REGISTRUJ SE
+            <button id="registerSubmit" type="submit" class="btn w-100" style="background-color: #d6b3ff; color: black; font-weight: bold;" disabled>
+                REGISTER
             </button>
+
         </form>
 
         <div class="mt-4 text-center">
-            <p>Već imate nalog? <a asp-page="./Login">Prijavi se</a></p>
+            <p>Already registered? <a asp-page="./Login">Log in</a></p>
         </div>
     </div>
 </div>
@@ -83,12 +127,156 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <!-- Font Awesome za ikone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        .requirement {
+            transition: all 0.3s ease;
+            padding: 2px 0;
+        }
+
+            .requirement i {
+                transition: all 0.3s ease;
+            }
+
+        #passwordRequirements {
+            transition: border-color 0.3s ease;
+        }
+
+        #passwordMatch {
+            transition: all 0.3s ease;
+        }
+
+        #match-indicator {
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        #registerSubmit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #registerSubmit:enabled {
+            opacity: 1;
+            cursor: pointer;
+        }
+    </style>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            validatePassword(); // provjeri odmah pri učitavanju
+
             var showModal = @Json.Serialize(Model.ShowVerificationModal);
             if (showModal) {
                 var myModal = new bootstrap.Modal(document.getElementById('verificationModal'));
                 myModal.show();
+            }
+        });
+
+        function validatePassword() {
+            const password = document.getElementById("passwordInput").value;
+            const submitBtn = document.getElementById("registerSubmit");
+
+            // Provjeri svaki zahtjev
+            const requirements = {
+                'length-req': password.length >= 8,
+                'lowercase-req': /[a-z]/.test(password),
+                'uppercase-req': /[A-Z]/.test(password),
+                'number-req': /\d/.test(password),
+                'special-req': /[\W_]/.test(password)
+            };
+
+            let allValid = true;
+
+            // Ažuriraj ikone i stilove za svaki zahtjev
+            Object.keys(requirements).forEach(reqId => {
+                const element = document.getElementById(reqId);
+                const icon = element.querySelector('i');
+
+                if (requirements[reqId]) {
+                    // Zahtjev je ispunjen
+                    icon.className = 'fas fa-check text-success me-2';
+                    element.style.color = '#198754';
+                } else {
+                    // Zahtjev nije ispunjen
+                    icon.className = 'fas fa-times text-danger me-2';
+                    element.style.color = '#dc3545';
+                    allValid = false;
+                }
+            });
+
+            // Provjeri i potvrdu šifre
+            const confirmPassword = document.getElementById("confirmPasswordInput").value;
+            const passwordsMatch = validatePasswordMatch();
+
+            // Omogući/onemogući dugme za registraciju
+            submitBtn.disabled = !(allValid && passwordsMatch);
+
+            // Promijeni boju okvira na osnovu validnosti
+            const requirementsBox = document.getElementById('passwordRequirements');
+            if (allValid && password.length > 0) {
+                requirementsBox.style.borderColor = '#198754';
+                requirementsBox.style.backgroundColor = '#f0f9f0';
+            } else if (password.length > 0) {
+                requirementsBox.style.borderColor = '#dc3545';
+                requirementsBox.style.backgroundColor = '#fdf2f2';
+            } else {
+                requirementsBox.style.borderColor = '#dee2e6';
+                requirementsBox.style.backgroundColor = '#f8f9fa';
+            }
+        }
+
+        function validatePasswordMatch() {
+            const password = document.getElementById("passwordInput").value;
+            const confirmPassword = document.getElementById("confirmPasswordInput").value;
+            const matchDiv = document.getElementById("passwordMatch");
+            const matchIcon = document.getElementById("match-icon");
+            const matchText = document.getElementById("match-text");
+            const matchIndicator = document.getElementById("match-indicator");
+
+            // Prikaži div samo ako je potvrda šifre unesena
+            if (confirmPassword.length > 0) {
+                matchDiv.style.display = 'block';
+
+                if (password === confirmPassword && password.length > 0) {
+                    // Šifre se poklapaju
+                    matchIcon.className = 'fas fa-check text-success me-2';
+                    matchText.textContent = 'Passwords match';
+                    matchText.style.color = '#198754';
+                    matchIndicator.style.backgroundColor = '#f0f9f0';
+                    matchIndicator.style.border = '1px solid #198754';
+                    return true;
+                } else {
+                    // Šifre se ne poklapaju
+                    matchIcon.className = 'fas fa-times text-danger me-2';
+                    matchText.textContent = 'Passwords do not match';
+                    matchText.style.color = '#dc3545';
+                    matchIndicator.style.backgroundColor = '#fdf2f2';
+                    matchIndicator.style.border = '1px solid #dc3545';
+                    return false;
+                }
+            } else {
+                matchDiv.style.display = 'none';
+                return password.length === 0; // Ako nema šifre, ne zahtijevaj podudaranje
+            }
+        }
+
+        // Dodaj event listenere za real-time validaciju
+        document.getElementById("passwordInput").addEventListener("input", function() {
+            validatePassword();
+            validatePasswordMatch();
+        });
+
+        document.getElementById("confirmPasswordInput").addEventListener("input", function() {
+            validatePasswordMatch();
+            // Provjeri i glavnu validaciju za omogućavanje dugmeta
+            const password = document.getElementById("passwordInput").value;
+            if (password.length > 0) {
+                validatePassword();
             }
         });
     </script>
