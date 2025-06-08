@@ -33,7 +33,8 @@ namespace Grupa5Tim3.servis
                 var kupac = await _context.Users.FindAsync(aukcija.kupacID);
                 if (kupac != null && !string.IsNullOrEmpty(kupac.Email))
                 {
-                    string qrSadrzaj = $"Kupac: {kupac.UserName}\nUmjetnina: {aukcija.Umjetnina?.naziv}\nCijena: {aukcija.trenutnaCijena} KM";
+                    string qrSadrzaj = "http://artevopay-001-site1.mtempurl.com";
+
                     byte[] qrBytes = QrCodeHelper.GenerateQrCode(qrSadrzaj);
 
                     string subject = "Artevo - Potvrda o kupovini umjetnine";

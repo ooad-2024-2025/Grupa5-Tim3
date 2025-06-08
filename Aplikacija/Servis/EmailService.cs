@@ -17,7 +17,7 @@ namespace Grupa5Tim3.servis
             // Dodaj QR kod kao attachment
             message.Attachments.Add(new Attachment(new MemoryStream(qrCodeImage), "potvrda.png", "image/png"));
 
-            using var smtp = new SmtpClient("smtp.yourserver.com") // zamijeni sa stvarnim SMTP serverom
+            using var smtp = new SmtpClient("smtp.yourserver.com") 
             {
                 Port = 587,
                 Credentials = new NetworkCredential("your_email@example.com", "your_password"),
