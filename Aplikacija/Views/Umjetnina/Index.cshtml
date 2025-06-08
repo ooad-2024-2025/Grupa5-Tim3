@@ -12,11 +12,60 @@
 </div>
 }
 
+<div class="filters-div">
+    <button class="custom-bid-btn" onclick="openSidebar()">Filters</button>
+</div>
+
+<!-- Sliding Sidebar -->
+<div id="filterSidebar" class="sidebar">
+    
+    <a href="javascript:void(0)" class="closebtn" onclick="closeSidebar()">&times;</a>
+    <h4 style="color:black; padding:10px;">Filters</h4>
+    <!-- Add filter controls here -->
+    <div style="padding: 10px; color:black;margin-left:20px;">
+       <form method="get" asp-controller="Umjetnina" asp-action="Index" id="filterForm">
+    <h5 style="margin-top:20px;">Authors</h5>
+    @foreach (var autor in (List<string>)ViewBag.Autori)
+    {
+        <div>
+            <input type="checkbox" name="autori" value="@autor"
+                   @(ViewBag.SelectedAutori.Contains(autor) ? "checked" : "") /> @autor
+        </div>
+    }
+
+    <h5  style="margin-top:20px;">Techniques</h5>
+    @foreach (var tehnika in (List<string>)ViewBag.Tehnike)
+    {
+        <div>
+            <input type="checkbox" name="tehnike" value="@tehnika"
+                   @(ViewBag.SelectedTehnike.Contains(tehnika) ? "checked" : "") /> @tehnika
+        </div>
+    }
+
+    <h5  style="margin-top:20px;">Periods</h5>
+    @foreach (var period in (List<string>)ViewBag.Periodi)
+    {
+        <div>
+            <input type="checkbox" name="periodi" value="@period"
+                   @(ViewBag.SelectedPeriodi.Contains(period) ? "checked" : "") /> @period
+        </div>
+    }
+    <br />
+    <br />
+    <button class="btn btn-light btn-sm" onclick="applyFilter()">Primijeni</button>
+
+</form>
+    </div>
+</div>
+<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
 <div class="row">
     @foreach (var item in Model)
     {
         <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100 shadow-sm"
+     data-autor="@item.autor?.ToLowerInvariant()"
+     data-cijena="@((aukcije != null && aukcije.ContainsKey(item.umjetinaID)) ? aukcije[item.umjetinaID].trenutnaCijena : item.pocetnaCijena ?? 0)">
                 @if (!string.IsNullOrEmpty(item.SlikaPath))
                 {
                     <img src="@item.SlikaPath" class="card-img-top" style="height: 300px; object-fit: cover;" />
@@ -102,6 +151,46 @@ else
 </div>
 
 <style>
+
+    .overlay {
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); /* zatamnjenje */
+    z-index: 1049; /* odmah ispod sidebar-a (1050) */
+}
+
+    .sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1050;
+    top: 0;
+    left: 0;
+    background-color: #e6ccff;
+    overflow-x: hidden;
+    transition: 0.4s;
+    padding-top: 60px;
+}
+
+.sidebar .closebtn {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    color: black;
+    cursor: pointer;
+}
+
+
+    .filters-div{
+        margin-left: 0px;
+        margin-bottom:20px;
+        margin-top:20px;
+    }
     .card {
         border-radius: 12px;
         overflow: hidden;
@@ -166,3 +255,38 @@ else
     font-weight: bold;
 }
 </style>
+
+@section Scripts {
+    <script>
+        function openSidebar() {
+            document.getElementById("filterSidebar").style.width = "250px";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function closeSidebar() {
+            document.getElementById("filterSidebar").style.width = "0";
+            document.getElementById("overlay").style.display = "none";
+        }
+        function applyFilter() {
+    const autorFilter = document.getElementById("autorFilter").value.toLowerCase();
+    const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+    const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Number.MAX_VALUE;
+
+    const cards = document.querySelectorAll('.card.h-100');
+
+    cards.forEach(card => {
+        const autor = card.getAttribute('data-autor');
+        const cijena = parseFloat(card.getAttribute('data-cijena'));
+
+        const autorMatch = autor.includes(autorFilter);
+        const cijenaMatch = cijena >= minPrice && cijena <= maxPrice;
+
+        if (autorMatch && cijenaMatch) {
+            card.parentElement.style.display = 'block';
+        } else {
+            card.parentElement.style.display = 'none';
+        }
+    });
+}
+    </script>
+}

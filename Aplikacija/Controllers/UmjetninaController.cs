@@ -24,19 +24,45 @@ namespace Grupa5Tim3.Controllers
         }
 
         // GET: Umjetninas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(List<string> autori, List<string> tehnike, List<string> periodi, bool? samoAktivneAukcije)
         {
-            var umjetnine = await _context.Umjetnina.ToListAsync(); 
+            var query = _context.Umjetnina.AsQueryable();
+
+            // Dodaj filtriranje
+            if (autori != null && autori.Any())
+                query = query.Where(u => autori.Contains(u.autor));
+
+            if (tehnike != null && tehnike.Any())
+                query = query.Where(u => tehnike.Contains(u.tehnika));
+
+            if (periodi != null && periodi.Any())
+                query = query.Where(u => periodi.Contains(u.period));
+
+            var umjetnine = await query.ToListAsync();
 
             var aukcije = await _context.Aukcija
                 .GroupBy(a => a.umjetninaID)
                 .Select(g => g.OrderByDescending(a => a.zavrsetakAukcije).FirstOrDefault())
                 .ToDictionaryAsync(a => a.umjetninaID, a => a);
 
+           
+
             ViewBag.Aukcije = aukcije;
+
+            // Za checkboxes
+            ViewBag.Autori = await _context.Umjetnina.Select(u => u.autor).Distinct().ToListAsync();
+            ViewBag.Tehnike = await _context.Umjetnina.Select(u => u.tehnika).Distinct().ToListAsync();
+            ViewBag.Periodi = await _context.Umjetnina.Select(u => u.period).Distinct().ToListAsync();
+
+            // Sačuvaj izabrano
+            ViewBag.SelectedAutori = autori ?? new List<string>();
+            ViewBag.SelectedTehnike = tehnike ?? new List<string>();
+            ViewBag.SelectedPeriodi = periodi ?? new List<string>();
+
 
             return View(umjetnine);
         }
+
 
         // GET: Umjetninas/Details/5
         [Authorize(Policy = "ExcludeKriticar")]
