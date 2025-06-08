@@ -1,7 +1,7 @@
 ﻿@model Grupa5Tim3.Models.Umjetnina
 
 @{
-    ViewData["Title"] = "Dodaj umjetninu";
+    ViewData["Title"] = "Add artwork";
 }
 
 <style>
@@ -59,50 +59,50 @@
 </style>
 
 <div class="form-wrapper">
-    <h2>Dodaj novu umjetninu</h2>
+    <h2>Add new artwork</h2>
 
     <form asp-action="Create" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-grid">
             <div class="form-group">
-                <label asp-for="naziv"></label>
+                <label asp-for="naziv">Title</label>
                 <input asp-for="naziv" />
                 <span asp-validation-for="naziv" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="datum"></label>
+                <label asp-for="datum">Date</label>
                 <input asp-for="datum" type="date" />
                 <span asp-validation-for="datum" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="autor"></label>
+                <label asp-for="autor">Author</label>
                 <input asp-for="autor" />
                 <span asp-validation-for="autor" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="period"></label>
+                <label asp-for="period">Period</label>
                 <input asp-for="period" />
                 <span asp-validation-for="period" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="tehnika"></label>
+                <label asp-for="tehnika">Technique</label>
                 <input asp-for="tehnika" />
                 <span asp-validation-for="tehnika" class="text-danger"></span>
             </div>
 
           
             <div class="form-group">
-                <label asp-for="opis" class="control-label"></label>
+                <label asp-for="opis" class="control-label">Details</label>
                 <textarea asp-for="opis" class="form-control"></textarea>
                 <span asp-validation-for="opis" class="text-danger"></span>
             </div>
 
             <div class="form-group" style="grid-column: span 2;">
-                <label for="Slika">Slika</label>
+                <label for="Slika">Picture</label>
                 <input type="file" name="Slika" />
             </div>
 
@@ -113,7 +113,7 @@
     </form>
 
     <div style="margin-top: 20px;">
-        <a asp-action="Index">Nazad na listu</a>
+        <a asp-action="Index">Back to list</a>
     </div>
 </div>
 

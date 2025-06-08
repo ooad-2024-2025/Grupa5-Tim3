@@ -6,37 +6,37 @@
 
 <div class="container py-5 d-flex justify-content-center">
     <div class="card shadow-lg p-4" style="width: 100%; max-width: 700px; border-radius: 20px;">
-        <h2 class="mb-4 text-center fw-bold">Uredi aukciju</h2>
+        <h2 class="mb-4 text-center fw-bold">Edit auction</h2>
 
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="AukcijaID" />
 
             <div class="mb-3">
-                <label asp-for="umjetninaID" class="form-label fw-bold">Umjetnina</label>
+                <label asp-for="umjetninaID" class="form-label fw-bold">Artwork</label>
                 <input asp-for="umjetninaID" class="form-control rounded-pill" />
                 <span asp-validation-for="umjetninaID" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="trenutnaCijena" class="form-label">Trenutna cijena</label>
+                <label asp-for="trenutnaCijena" class="form-label">Current price</label>
                 <input asp-for="trenutnaCijena" class="form-control" readonly />
             </div>
 
             <div class="mb-3">
-                <label asp-for="pocetakAukcije" class="form-label fw-bold">Početak aukcije</label>
+                <label asp-for="pocetakAukcije" class="form-label fw-bold">Auction start</label>
                 <input asp-for="pocetakAukcije" class="form-control rounded-pill" type="datetime-local" />
                 <span asp-validation-for="pocetakAukcije" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="zavrsetakAukcije" class="form-label fw-bold">Završetak aukcije</label>
+                <label asp-for="zavrsetakAukcije" class="form-label fw-bold">Auction end</label>
                 <input asp-for="zavrsetakAukcije" class="form-control rounded-pill" type="datetime-local" />
                 <span asp-validation-for="zavrsetakAukcije" class="text-danger"></span>
             </div>
 
             <div class="mb-4">
-                <label asp-for="status" class="form-label fw-bold">Status aukcije</label>
+                <label asp-for="status" class="form-label fw-bold">Auction status</label>
                 <select asp-for="status" class="form-control rounded-pill">
                     <option value="Aktivna">Aktivna</option>
                     <option value="Otkazana">Otkazana</option>
@@ -45,12 +45,12 @@
             </div>
 
             <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary rounded-pill fw-bold">Spremi</button>
+                <button type="submit" class="btn btn-primary rounded-pill fw-bold">Save</button>
             </div>
         </form>
 
         <div class="text-center">
-            <a asp-action="Index" class="text-decoration-none">← Nazad na listu</a>
+            <a asp-action="Index" class="text-decoration-none">← Back to list</a>
         </div>
     </div>
 </div>

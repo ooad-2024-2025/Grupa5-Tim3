@@ -1,35 +1,35 @@
 ﻿@model Grupa5Tim3.Models.Umjetnina
 
 @{
-    ViewData["Title"] = "Brisanje umjetnine";
+    ViewData["Title"] = "Delete artwork";
 }
 
-<h1 class="mb-4 text-danger">Brisanje umjetnine</h1>
+<h1 class="mb-4 text-danger">Delete artwork</h1>
 
 <div class="row">
     <div class="col-md-8">
         <div class="card shadow-sm p-4">
-            <h4 class="mb-3 text-muted">Detalji</h4>
+            <h4 class="mb-3 text-muted">Details</h4>
             <dl class="row">
-                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.naziv)</dt>
+                <dt class="col-sm-4">Title</dt>
                 <dd class="col-sm-8">@Html.DisplayFor(model => model.naziv)</dd>
 
-                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.autor)</dt>
+                <dt class="col-sm-4">Author</dt>
                 <dd class="col-sm-8">@Html.DisplayFor(model => model.autor)</dd>
 
-                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.period)</dt>
+                <dt class="col-sm-4">Period</dt>
                 <dd class="col-sm-8">@Html.DisplayFor(model => model.period)</dd>
 
-                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.datum)</dt>
+                <dt class="col-sm-4">Date</dt>
                 <dd class="col-sm-8">@Html.DisplayFor(model => model.datum)</dd>
 
-                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.tehnika)</dt>
+                <dt class="col-sm-4">Technique</dt>
                 <dd class="col-sm-8">@Html.DisplayFor(model => model.tehnika)</dd>
 
-                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.pocetnaCijena)</dt>
+                <dt class="col-sm-4">Starting price</dt>
                 <dd class="col-sm-8">@Html.DisplayFor(model => model.pocetnaCijena)</dd>
 
-                <dt class="col-sm-4">Slika</dt>
+                <dt class="col-sm-4">Picture</dt>
                 <dd class="col-sm-8">
                     @if (!string.IsNullOrEmpty(Model.SlikaPath))
                     {
@@ -37,7 +37,7 @@
                     }
                     else
                     {
-                        <span class="text-muted fst-italic">(Nema slike)</span>
+                        <span class="text-muted fst-italic">(No picture)</span>
                     }
                 </dd>
             </dl>
@@ -47,17 +47,17 @@
                 <form asp-action="Delete" class="mt-4">
                     <input type="hidden" asp-for="umjetinaID" />
                     <div class="d-flex align-items-center gap-3">
-                        <input type="submit" value="Obriši" class="btn btn-danger" />
-                        <a asp-action="Index" class="btn btn-secondary">Nazad</a>
+                        <input type="submit" value="Delete" class="btn btn-danger" />
+                        <a asp-action="Index" class="btn btn-secondary">Back</a>
                     </div>
                 </form>
             }
             else
             {
                 <div class="alert alert-warning mt-3">
-                    Nemate dozvolu za brisanje ove umjetnine.
+                    You don't have permission to delete this artwork.
                 </div>
-                <a asp-action="Index" class="btn btn-secondary mt-2">Nazad</a>
+                <a asp-action="Index" class="btn btn-secondary mt-2">Back</a>
             }
         </div>
     </div>
