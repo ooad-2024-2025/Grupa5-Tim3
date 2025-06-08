@@ -17,6 +17,9 @@ namespace Grupa5Tim3.Models
         [ForeignKey("umjetninaID")]
         public virtual Umjetnina? Umjetnina { get; set; }
 
+        public ICollection<KorisnikAukcija> KorisnikAukcije { get; set; }
+
+
         public Aukcija() { }
     }
 }

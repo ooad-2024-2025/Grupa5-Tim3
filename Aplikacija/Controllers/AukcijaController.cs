@@ -267,6 +267,20 @@ namespace Grupa5Tim3.Controllers
             _context.Update(aukcija);
             await _context.SaveChangesAsync();
 
+            bool postoji = await _context.KorisnikAukcija.AnyAsync(ka => ka.korisnikID == userId && ka.aukcijaID == aukcija.AukcijaID);
+
+            if (!postoji)
+            {
+                var korisnikAukcija = new KorisnikAukcija
+                {
+                    korisnikID = userId,
+                    aukcijaID = aukcija.AukcijaID
+                };
+
+                _context.KorisnikAukcija.Add(korisnikAukcija);
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Details), new { id = aukcija.AukcijaID });
         }
 
@@ -275,5 +289,25 @@ namespace Grupa5Tim3.Controllers
         {
             return _context.Aukcija.Any(e => e.AukcijaID == id);
         }
+
+        [Authorize]
+        public async Task<IActionResult> MojeAukcije()
+        {
+            var userId = _context.Users
+                .FirstOrDefault(u => u.UserName == User.Identity.Name)?.Id;
+
+            if (userId == null)
+                return Forbid();
+
+            var aukcije = await _context.KorisnikAukcija
+                .Where(ka => ka.korisnikID == userId)
+                .Include(ka => ka.aukcija)
+                .ThenInclude(a => a.Umjetnina)
+                .Select(ka => ka.aukcija)
+                .ToListAsync();
+
+            return View(aukcije);
+        }
+
     }
 }

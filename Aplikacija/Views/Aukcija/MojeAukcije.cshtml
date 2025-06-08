@@ -1,0 +1,67 @@
+﻿@model List<Grupa5Tim3.Models.Aukcija>
+
+@{
+    ViewData["Title"] = "My Auctions";
+}
+
+<h2 class="mb-4">Moje Aukcije</h2>
+
+<div class="row">
+    @if (!Model.Any())
+    {
+        <div class="col-12 text-center">
+            <p class="text-muted">You haven't participated in any auctions.</p>
+        </div>
+    }
+
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm" style="border: none; border-radius: 12px;">
+
+                <div style="background-color: #EDE7F6; padding: 12px 16px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                    <strong style="
+                                    color: #5E35B1;
+                                    font-size: 1.25rem;
+                                    font-weight: 700;
+                                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                    text-transform: uppercase;
+                                    letter-spacing: 1px;">
+                        Artwork: @item.Umjetnina.naziv 
+                    </strong>
+                </div>
+
+                <div class="card-body" style="font-family: 'Segoe UI', sans-serif;">
+                    <p class="card-text"><strong>Auction ID:</strong> @item.AukcijaID</p>
+                    <p class="card-text"><strong>Current price:</strong> @item.trenutnaCijena</p>
+                    <p class="card-text"><strong>Start:</strong> @item.pocetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
+                    <p class="card-text"><strong>End:</strong> @item.zavrsetakAukcije.ToString("dd.MM.yyyy HH:mm")</p>
+                    <p class="card-text">
+                        <strong>Status:</strong>
+                        @if (item.status == Status.Aktivna)
+                        {
+                            <span class="fw-bold text-success">Active</span>
+                        }
+                        else if (item.status == Status.Finalizirana)
+                        {
+                            <span class="fw-bold text-danger">Ended</span>
+                        }
+                        else
+                        {
+                            <span class="fw-bold text-secondary">@item.status</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
+                    <a asp-action="Details" asp-route-id="@item.AukcijaID"
+                       class="btn btn-sm"
+                       style="border: 1px solid #B39DDB; color: #5E35B1; background-color: #f3e5f5; border-radius: 6px;">
+                        Details
+                    </a>
+                    
+                </div>
+            </div>
+        </div>
+    }
+</div>
