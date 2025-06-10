@@ -15,7 +15,7 @@ namespace Grupa5Tim3.Models
         [Display(Name = "Datum rodjenja")]
         public DateTime datumRodjenja { get; set; }
 
-        public ICollection<KorisnikAukcija> KorisnikAukcije { get; set; }
+        public ICollection<KorisnikAukcija> KorisnikAukcije { get; set; } = new List<KorisnikAukcija>();
 
     }
 }
