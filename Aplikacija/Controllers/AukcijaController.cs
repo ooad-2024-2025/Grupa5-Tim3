@@ -248,7 +248,7 @@ namespace Grupa5Tim3.Controllers
 
             if (aukcija.status != Status.Aktivna)
             {
-                ModelState.AddModelError("", "Aukcija nije aktivna.");
+                ModelState.AddModelError("", "Auction not available.");
                 return View(aukcija);
             }
 
