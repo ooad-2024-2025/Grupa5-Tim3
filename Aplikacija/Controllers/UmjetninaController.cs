@@ -31,12 +31,9 @@ namespace Grupa5Tim3.Controllers
             [FromQuery] List<string>? periodi = null,
             [FromQuery] int? auctionStatusIndex = null,
             [FromQuery] string? search = null,
-            [FromQuery] double? poc = null,
             [FromQuery] double? minPrice = null,
             [FromQuery] double? maxPrice = null)
         {
-
-
             var aukcijeDict = await _context.Aukcija
                     .GroupBy(a => a.umjetninaID)
                     .Select(g => g.OrderByDescending(a => a.zavrsetakAukcije).FirstOrDefault())
@@ -45,45 +42,18 @@ namespace Grupa5Tim3.Controllers
             var query = _context.Umjetnina.AsQueryable();
 
             ViewBag.Search = search;
-            ViewBag.SearchPrice = poc;
-
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-
-                if (double.TryParse(search, out double searchPrice))
-                {
-                    var umjetninaIdsWithPrice = await _context.Aukcija
-                        .Where(a => a.trenutnaCijena == searchPrice)
-                        .Select(a => a.umjetninaID)
-                        .ToListAsync();
-
-                    query = query.Where(u => umjetninaIdsWithPrice.Contains(u.umjetinaID));
-                }
-                else
-                {
-
-                    var loweredSearch = search.ToLower();
-                    query = query.Where(u =>
-                        u.naziv.ToLower().Contains(loweredSearch) ||
-                        u.autor.ToLower().Contains(loweredSearch) ||
-                        u.tehnika.ToLower().Contains(loweredSearch) ||
-                        u.period.ToLower().Contains(loweredSearch)
-                    );
-                }
+                // Modified search to only look for text matches
+                var loweredSearch = search.ToLower();
+                query = query.Where(u =>
+                    u.naziv.ToLower().Contains(loweredSearch) ||
+                    u.autor.ToLower().Contains(loweredSearch) ||
+                    u.tehnika.ToLower().Contains(loweredSearch) ||
+                    u.period.ToLower().Contains(loweredSearch)
+                );
             }
-
-
-            if (poc.HasValue)
-            {
-                var umjetninaIdsWithMatchingPrice = await _context.Aukcija
-                    .Where(a => a.trenutnaCijena == poc.Value)
-                    .Select(a => a.umjetninaID)
-                    .ToListAsync();
-
-                query = query.Where(u => umjetninaIdsWithMatchingPrice.Contains(u.umjetinaID));
-            }
-
 
             if (autori != null && autori.Any())
                 query = query.Where(u => autori.Contains(u.autor));
@@ -94,8 +64,6 @@ namespace Grupa5Tim3.Controllers
             if (periodi != null && periodi.Any())
                 query = query.Where(u => periodi.Contains(u.period));
 
-
-
             var statusMap = new[] { "All", "Active", "Finalized", "Canceled", "Pending" };
             string selectedStatus = auctionStatusIndex.HasValue && auctionStatusIndex.Value >= 0 && auctionStatusIndex.Value < statusMap.Length
                 ? statusMap[auctionStatusIndex.Value]
@@ -104,11 +72,11 @@ namespace Grupa5Tim3.Controllers
             if (selectedStatus != "All")
             {
                 var statusMapping = new Dictionary<string, Status>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "Active", Status.Aktivna },
-            { "Finalized", Status.Finalizirana },
-            { "Canceled", Status.Otkazana }
-        };
+                {
+                    { "Active", Status.Aktivna },
+                    { "Finalized", Status.Finalizirana },
+                    { "Canceled", Status.Otkazana }
+                };
 
                 var validUmjetninaIds = new HashSet<int>();
 
@@ -134,7 +102,6 @@ namespace Grupa5Tim3.Controllers
 
                 query = query.Where(u => validUmjetninaIds.Contains(u.umjetinaID));
             }
-
 
             var priceStats = await _context.Aukcija
                 .Where(a => a.trenutnaCijena >= 0)  // Change to include 0
@@ -168,7 +135,6 @@ namespace Grupa5Tim3.Controllers
 
             var umjetnine = await query.ToListAsync();
 
-
             ViewBag.Aukcije = aukcijeDict;
             ViewBag.Autori = await _context.Umjetnina.Select(u => u.autor).Distinct().ToListAsync();
             ViewBag.Tehnike = await _context.Umjetnina.Select(u => u.tehnika).Distinct().ToListAsync();
@@ -182,9 +148,6 @@ namespace Grupa5Tim3.Controllers
 
             return View(umjetnine);
         }
-
-
-
 
         // GET: Umjetninas/Details/5
         [Authorize(Policy = "ExcludeKriticar")]

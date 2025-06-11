@@ -7,7 +7,14 @@
 
 <div class="container mb-3 d-flex justify-content-center">
     <form class="d-flex w-50" asp-controller="Umjetnina" asp-action="Index" method="get">
-        <input class="form-control rounded-pill me-2" type="search" name="search" placeholder="Search artworks..." style="min-width: 180px;" value="@ViewBag.Search">
+        <input class="form-control rounded-pill me-2" 
+               type="search" 
+               name="search" 
+               placeholder="Search artworks..." 
+               style="min-width: 180px;" 
+               value="@ViewBag.Search"
+               pattern="[A-Za-z\s]*"
+               title="Please enter letters only">
         <button class="btn rounded-pill" type="submit" style="background-color: #d9b3ff; color: #5d3a9b; border: none;">Search</button>
     </form>
 </div>
@@ -282,6 +289,13 @@
         </div>
     }
 </div>
+
+<script>
+    document.querySelector('input[name="search"]').addEventListener('input', function(e) {
+   
+        this.value = this.value.replace(/[^A-Za-z\s]/g, '');
+    });
+</script>
 
 <style>
     .sidebar {
