@@ -242,7 +242,7 @@ namespace Grupa5Tim3.Controllers
             if (aukcija == null)
             {
            
-                ModelState.AddModelError("", "Aukcija još uvijek nije aktivna.");
+                ModelState.AddModelError("", "Auction not available.");
                 return View(null); 
             }
 
@@ -254,7 +254,7 @@ namespace Grupa5Tim3.Controllers
 
             if (novaCijena <= aukcija.trenutnaCijena)
             {
-                ModelState.AddModelError("", "Nova cijena mora biti veća od trenutne.");
+                ModelState.AddModelError("", "New bidding offer needs to be higher than the current bid!");
                 return View(aukcija);
             }
 

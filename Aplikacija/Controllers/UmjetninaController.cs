@@ -24,27 +24,67 @@ namespace Grupa5Tim3.Controllers
         }
 
         // GET: Umjetninas
+        [HttpGet]
         public async Task<IActionResult> Index(
-       List<string> autori,
-       List<string> tehnike,
-       List<string> periodi,
-       int? auctionStatusIndex,
-       string search)
+            [FromQuery] List<string>? autori = null,
+            [FromQuery] List<string>? tehnike = null,
+            [FromQuery] List<string>? periodi = null,
+            [FromQuery] int? auctionStatusIndex = null,
+            [FromQuery] string? search = null,
+            [FromQuery] double? poc = null,
+            [FromQuery] double? minPrice = null,
+            [FromQuery] double? maxPrice = null)
         {
+
+
+            var aukcijeDict = await _context.Aukcija
+                    .GroupBy(a => a.umjetninaID)
+                    .Select(g => g.OrderByDescending(a => a.zavrsetakAukcije).FirstOrDefault())
+                    .ToDictionaryAsync(a => a.umjetninaID, a => a);
+
             var query = _context.Umjetnina.AsQueryable();
 
-            // Search tekst - pretraga po više polja
+            ViewBag.Search = search;
+            ViewBag.SearchPrice = poc;
+
+
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var loweredSearch = search.ToLower();
-                query = query.Where(u =>
-                    u.naziv.ToLower().Contains(loweredSearch) ||
-                    u.autor.ToLower().Contains(loweredSearch) ||
-                    u.tehnika.ToLower().Contains(loweredSearch) ||
-                    u.period.ToLower().Contains(loweredSearch));
+
+                if (double.TryParse(search, out double searchPrice))
+                {
+                    var umjetninaIdsWithPrice = await _context.Aukcija
+                        .Where(a => a.trenutnaCijena == searchPrice)
+                        .Select(a => a.umjetninaID)
+                        .ToListAsync();
+
+                    query = query.Where(u => umjetninaIdsWithPrice.Contains(u.umjetinaID));
+                }
+                else
+                {
+
+                    var loweredSearch = search.ToLower();
+                    query = query.Where(u =>
+                        u.naziv.ToLower().Contains(loweredSearch) ||
+                        u.autor.ToLower().Contains(loweredSearch) ||
+                        u.tehnika.ToLower().Contains(loweredSearch) ||
+                        u.period.ToLower().Contains(loweredSearch)
+                    );
+                }
             }
 
-            // Filtriranje po autorima, tehnikama i periodima
+
+            if (poc.HasValue)
+            {
+                var umjetninaIdsWithMatchingPrice = await _context.Aukcija
+                    .Where(a => a.trenutnaCijena == poc.Value)
+                    .Select(a => a.umjetninaID)
+                    .ToListAsync();
+
+                query = query.Where(u => umjetninaIdsWithMatchingPrice.Contains(u.umjetinaID));
+            }
+
+
             if (autori != null && autori.Any())
                 query = query.Where(u => autori.Contains(u.autor));
 
@@ -54,17 +94,12 @@ namespace Grupa5Tim3.Controllers
             if (periodi != null && periodi.Any())
                 query = query.Where(u => periodi.Contains(u.period));
 
-            // Dobavljanje zadnje aukcije po umjetnini
-            var aukcijeDict = await _context.Aukcija
-                .GroupBy(a => a.umjetninaID)
-                .Select(g => g.OrderByDescending(a => a.zavrsetakAukcije).FirstOrDefault())
-                .ToDictionaryAsync(a => a.umjetninaID, a => a);
 
-            // Auction status slider obrada
+
             var statusMap = new[] { "All", "Active", "Finalized", "Canceled", "Pending" };
             string selectedStatus = auctionStatusIndex.HasValue && auctionStatusIndex.Value >= 0 && auctionStatusIndex.Value < statusMap.Length
                 ? statusMap[auctionStatusIndex.Value]
-                : "All"; // defaultno na "All"
+                : "All";
 
             if (selectedStatus != "All")
             {
@@ -100,9 +135,40 @@ namespace Grupa5Tim3.Controllers
                 query = query.Where(u => validUmjetninaIds.Contains(u.umjetinaID));
             }
 
+
+            var priceStats = await _context.Aukcija
+                .Where(a => a.trenutnaCijena >= 0)  // Change to include 0
+                .Select(a => a.trenutnaCijena)
+                .GroupBy(_ => true)
+                .Select(g => new
+                {
+                    MinPrice = 0.0,  // Always start at 0
+                    MaxPrice = g.Max()
+                })
+                .FirstOrDefaultAsync() ?? new { MinPrice = 0.0, MaxPrice = 10000.0 };
+
+            ViewBag.MinPrice = 0.0;  // Always set min price to 0
+            ViewBag.MaxPrice = Math.Max(priceStats.MaxPrice, 1.0);  // Ensure max price is at least 1
+            ViewBag.SelectedMinPrice = minPrice ?? 0.0;  // Default to 0
+            ViewBag.SelectedMaxPrice = maxPrice ?? priceStats.MaxPrice;
+
+            if (minPrice.HasValue || maxPrice.HasValue)
+            {
+                var currentMinPrice = minPrice ?? priceStats.MinPrice;
+                var currentMaxPrice = maxPrice ?? priceStats.MaxPrice;
+
+                var umjetninaIdsInPriceRange = await _context.Aukcija
+                    .Where(a => a.trenutnaCijena >= currentMinPrice &&
+                               a.trenutnaCijena <= currentMaxPrice)
+                    .Select(a => a.umjetninaID)
+                    .ToListAsync();
+
+                query = query.Where(u => umjetninaIdsInPriceRange.Contains(u.umjetinaID));
+            }
+
             var umjetnine = await query.ToListAsync();
 
-            // ViewBag podaci
+
             ViewBag.Aukcije = aukcijeDict;
             ViewBag.Autori = await _context.Umjetnina.Select(u => u.autor).Distinct().ToListAsync();
             ViewBag.Tehnike = await _context.Umjetnina.Select(u => u.tehnika).Distinct().ToListAsync();
@@ -116,6 +182,8 @@ namespace Grupa5Tim3.Controllers
 
             return View(umjetnine);
         }
+
+
 
 
         // GET: Umjetninas/Details/5

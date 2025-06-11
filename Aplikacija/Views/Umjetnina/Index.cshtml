@@ -72,6 +72,37 @@
                 <strong>Status:</strong> <span id="auctionStatusLabel">All</span>
             </div>
 
+            <h5>Current bidds</h5>
+            <div class="price-range-slider mb-3">
+                <div class="price-labels mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="fw-bold">Min price:</label>
+                        <span id="minPriceLabel" class="price-value">@(ViewBag.SelectedMinPrice.ToString("F2")) KM</span>
+                    </div>
+                    <input type="range"
+                           id="minPrice"
+                           name="minPrice"
+                           min="0"
+                           max="@ViewBag.MaxPrice"
+                           value="@ViewBag.SelectedMinPrice"
+                           step="1"
+                           class="form-range mb-3">
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="fw-bold">Max price:</label>
+                        <span id="maxPriceLabel" class="price-value">@(ViewBag.SelectedMaxPrice.ToString("F2")) KM</span>
+                    </div>
+                    <input type="range"
+                           id="maxPrice"
+                           name="maxPrice"
+                           min="0"
+                           max="@ViewBag.MaxPrice"
+                           value="@ViewBag.SelectedMaxPrice"
+                           step="1"
+                           class="form-range">
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-outline-dark mt-4" style="background-color: #e1c8ff; border: none; border-radius: 8px; padding: 6px 20px; font-weight: 500;">Apply</button>
         </form>
     </div>
@@ -82,6 +113,9 @@
 
 <script>
     const statuses = ["All", "Active", "Finalized", "Canceled", "Pending"];
+    const priceRangeSection = document.querySelector('.price-range-slider');
+    const auctionStatusSlider = document.getElementById('auctionStatusSlider');
+
     function openSidebar() {
         document.getElementById("filterSidebar").style.width = "300px";
         document.getElementById("overlay").style.display = "block";
@@ -94,14 +128,79 @@
 
     function updateStatusLabel(index) {
         document.getElementById("auctionStatusLabel").textContent = statuses[index];
+        const minPrice = document.getElementById("minPrice");
+        const maxPrice = document.getElementById("maxPrice");
+
+        // Disable price range for All (0) and Pending (4) status
+        if (index === "0" || index === "4") {
+            priceRangeSection.style.opacity = "0.5";
+            priceRangeSection.style.pointerEvents = "none";
+            minPrice.disabled = true;
+            maxPrice.disabled = true;
+        } else {
+            priceRangeSection.style.opacity = "1";
+            priceRangeSection.style.pointerEvents = "auto";
+            minPrice.disabled = false;
+            maxPrice.disabled = false;
+        }
     }
 
     window.onload = function () {
         const urlParams = new URLSearchParams(window.location.search);
         const statusIndex = urlParams.get("auctionStatusIndex") || "0";
-        document.getElementById("auctionStatusSlider").value = statusIndex;
+        auctionStatusSlider.value = statusIndex;
         updateStatusLabel(statusIndex);
     };
+
+    // Add event listener for status slider changes
+    auctionStatusSlider.addEventListener('input', function() {
+        updateStatusLabel(this.value);
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const minSlider = document.getElementById('minPrice');
+        const maxSlider = document.getElementById('maxPrice');
+        const minLabel = document.getElementById('minPriceLabel');
+        const maxLabel = document.getElementById('maxPriceLabel');
+        const filterForm = document.getElementById('filterForm');
+
+        function updateLabels() {
+            minLabel.textContent = `${Number(minSlider.value).toFixed(2)} KM`;
+            maxLabel.textContent = `${Number(maxSlider.value).toFixed(2)} KM`;
+        }
+
+        function enforceMinMax() {
+            const minVal = Number(minSlider.value);
+            const maxVal = Number(maxSlider.value);
+
+            if (minVal > maxVal) {
+                if (this === minSlider) {
+                    maxSlider.value = minVal;
+                } else {
+                    minSlider.value = maxVal;
+                }
+            }
+            updateLabels();
+        }
+
+        minSlider.addEventListener('input', enforceMinMax);
+        maxSlider.addEventListener('input', enforceMinMax);
+        updateLabels();
+
+        if (filterForm) {
+            filterForm.addEventListener('submit', function(e) {
+                const statusValue = document.getElementById('auctionStatusSlider').value;
+
+                if (statusValue === "0" || statusValue === "4") {
+                    document.getElementById('minPrice').disabled = true;
+                    document.getElementById('maxPrice').disabled = true;
+                }
+            });
+        }
+
+        // Initial check for status
+        updateStatusLabel(auctionStatusSlider.value);
+    });
 </script>
 
 <div class="row">
@@ -287,5 +386,93 @@
 
     .card-footer {
         font-size: 14px;
+    }
+
+    .price-range-slider {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+    .price-labels label {
+        color: #5a3472;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+    .price-value {
+        color: #7b4bbd;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .form-range {
+        height: 6px;
+        padding: 0;
+    }
+
+        .form-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #9575cd;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+        }
+
+        .form-range::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #9575cd;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+        }
+
+        .form-range::-webkit-slider-runnable-track {
+            background: #e6ccff;
+            border-radius: 3px;
+            height: 6px;
+        }
+
+        .form-range::-moz-range-track {
+            background: #e6ccff;
+            border-radius: 3px;
+            height: 6px;
+        }
+
+        .form-range:focus {
+            outline: none;
+        }
+
+        .form-range::-webkit-slider-thumb:hover,
+        .form-range::-moz-range-thumb:hover {
+            background: #7e57c2;
+        }
+
+    .auction-status-slider {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
+    .status-value {
+        color: #7b4bbd;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .auction-status-slider label {
+        color: #5a3472;
+        font-size: 14px;
+        margin-bottom: 0;
     }
 </style>
