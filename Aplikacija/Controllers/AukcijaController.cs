@@ -83,13 +83,13 @@ namespace Grupa5Tim3.Controllers
                 // ✅ Provjeri da li postoji i da li se cijene poklapaju
                 if (umjetnina == null)
                 {
-                    ModelState.AddModelError("", "Odabrana umjetnina ne postoji.");
+                    ModelState.AddModelError("", "The chosen artwork doesn't exist.");
                     return View(aukcija);
                 }
 
                 if (aukcija.trenutnaCijena != umjetnina.pocetnaCijena)
                 {
-                    ModelState.AddModelError("trenutnaCijena", "Trenutna cijena mora biti jednaka početnoj cijeni umjetnine.");
+                    ModelState.AddModelError("trenutnaCijena", "The current price must be equal to the starting price.");
                     return View(aukcija);
                 }
 

@@ -43,8 +43,8 @@ public class SendGridEmailSender
         var from = new EmailAddress("lamijabojic@gmail.com", "Artevo");
         var to = new EmailAddress(email);
 
-        string subject = "Verifikacijski kod";
-        string htmlMessage = $"<p>Vaš verifikacijski kod je: <strong>{verificationCode}</strong></p>";
+        string subject = "Verification code";
+        string htmlMessage = $"<p>Your verification code is: <strong>{verificationCode}</strong></p>";
 
         var msg = MailHelper.CreateSingleEmail(from, to, subject, verificationCode, htmlMessage);
         var response = await client.SendEmailAsync(msg);

@@ -284,7 +284,7 @@ namespace Grupa5Tim3.Controllers
                         if (existingUmjetnina.pocetnaCijena != null && existingUmjetnina.pocetnaCijena > 0)
                         {
                            
-                            ModelState.AddModelError(string.Empty, "Početna cijena je već postavljena i ne može se mijenjati.");
+                            ModelState.AddModelError(string.Empty, "The starting price has already been set and can't be changed.");
                             return View(umjetnina);
                         }
 
@@ -292,8 +292,8 @@ namespace Grupa5Tim3.Controllers
 
                         if (jeNovaCijena)
                         {
-                            string subject = "Postavljena početna cijena";
-                            string message = $"Kritičar je postavio početnu cijenu za umjetninu <strong>{existingUmjetnina.naziv}</strong> (ID: <strong>{existingUmjetnina.umjetinaID}</strong>): <strong>{umjetnina.pocetnaCijena} KM</strong>.";
+                            string subject = "Starting price has been set";
+                            string message = $"The Critique has set the starting price for the artwork <strong>{existingUmjetnina.naziv}</strong> (ID: <strong>{existingUmjetnina.umjetinaID}</strong>): <strong>{umjetnina.pocetnaCijena} KM</strong>.";
 
                             if (emailSender != null)
                             {
