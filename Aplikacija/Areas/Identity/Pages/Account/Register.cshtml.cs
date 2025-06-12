@@ -55,9 +55,13 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [Display(Name = "First Name")]
+            [RegularExpression("^[a-zA-ZčćžšđČĆŽŠĐ\\s-]+$", ErrorMessage = "First name can only contain letters.")]
             public string ime { get; set; }
 
             [Required]
+            [Display(Name = "Last Name")]
+            [RegularExpression("^[a-zA-ZčćžšđČĆŽŠĐ\\s-]+$", ErrorMessage = "Last name can only contain letters.")]
             public string prezime { get; set; }
 
             [Required]

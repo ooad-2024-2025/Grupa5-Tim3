@@ -2,4 +2,55 @@
     ViewData["Title"] = "About Us";
 }
 
-<p>O nama vise</p>
+<!-- Google font -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+
+<style>
+    .about-container {
+        position: relative;
+        min-height: 100vh;
+        background-image: url('/images/AboutUs.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .overlay {
+        background-color: rgba(255, 255, 255, 0.7);
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    .content {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        font-family: 'Playfair Display', serif;
+        color: #333;
+    }
+
+    .text-box {
+        max-width: 800px;
+        font-size: 1.8rem; /* Veći tekst */
+        line-height: 1.8;
+    }
+</style>
+
+<div class="about-container">
+    <div class="overlay"></div>
+
+    <div class="content">
+        <div class="text-box">
+            ARTEVO is a modern online platform dedicated to connecting art enthusiasts, collectors, and creators through curated auctions of unique artworks. With a seamless and intuitive bidding experience, we aim to make fine art more accessible while supporting emerging and established artists alike. Whether you're searching for a one-of-a-kind piece or looking to showcase your work, ARTEVO provides a vibrant digital space where creativity meets opportunity.
+        </div>
+    </div>
+</div>
