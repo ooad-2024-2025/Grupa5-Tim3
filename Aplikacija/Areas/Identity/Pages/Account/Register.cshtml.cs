@@ -65,7 +65,9 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
             public string prezime { get; set; }
 
             [Required]
-            public string datumRodjenja { get; set; }
+            [DataType(DataType.Date)]
+            [Display(Name = "Date of Birth")]
+            public DateTime datumRodjenja { get; set; }
 
             [Required]
             [EmailAddress]
@@ -75,9 +77,8 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
             [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must contain at least 8 characters.")]
             [DataType(DataType.Password)]
             [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$",
-    ErrorMessage = "Password must contain an uppercase letter, a lowercase letter, a number and a special character.")]
+                ErrorMessage = "Password must contain an uppercase letter, a lowercase letter, a number and a special character.")]
             public string Password { get; set; }
-
 
             [DataType(DataType.Password)]
             [Compare("Password", ErrorMessage = "Passwords don't match.")]
@@ -97,21 +98,18 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
             if (!ModelState.IsValid)
                 return Page();
 
-            // Generiši kod za verifikaciju
+            // Slanje verifikacionog koda
             var code = await _emailSender.SendVerificationCodeEmailAsync(Input.Email);
 
             HttpContext.Session.SetString("VerificationCode", code);
             HttpContext.Session.SetString("UserEmail", Input.Email);
-
-            // Sačuvaj podatke korisnika u sesiju (ili koristi TempData ili skrivena polja)
             HttpContext.Session.SetString("ime", Input.ime);
             HttpContext.Session.SetString("prezime", Input.prezime);
-            HttpContext.Session.SetString("datumRodjenja", Input.datumRodjenja);
+            HttpContext.Session.SetString("datumRodjenja", Input.datumRodjenja.ToString("o")); // ISO format
             HttpContext.Session.SetString("Password", Input.Password);
 
             ShowVerificationModal = true;
-
-            return Page(); // Prikaži modal
+            return Page(); // Prikazuje modal
         }
 
         public async Task<IActionResult> OnPostVerify()
@@ -135,15 +133,21 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
             // Preuzmi podatke iz sesije
             var ime = HttpContext.Session.GetString("ime");
             var prezime = HttpContext.Session.GetString("prezime");
-            var datumRodjenja = HttpContext.Session.GetString("datumRodjenja");
+            var datumRodjenjaStr = HttpContext.Session.GetString("datumRodjenja");
             var password = HttpContext.Session.GetString("Password");
+
+            if (!DateTime.TryParse(datumRodjenjaStr, null, System.Globalization.DateTimeStyles.RoundtripKind, out var parsedDate))
+            {
+                ModelState.AddModelError(string.Empty, "Invalid date format.");
+                return Page();
+            }
 
             var user = CreateUser();
             user.UserName = expectedEmail;
             user.Email = expectedEmail;
             user.ime = ime;
             user.prezime = prezime;
-            user.datumRodjenja = DateTime.Parse(datumRodjenja);
+            user.datumRodjenja = parsedDate;
 
             var result = await _userManager.CreateAsync(user, password);
 
@@ -165,17 +169,10 @@ namespace Grupa5Tim3.Areas.Identity.Pages.Account
             await _signInManager.SignInAsync(user, isPersistent: false);
 
             // Očisti sesiju
-            HttpContext.Session.Remove("VerificationCode");
-            HttpContext.Session.Remove("UserEmail");
-            HttpContext.Session.Remove("ime");
-            HttpContext.Session.Remove("prezime");
-            HttpContext.Session.Remove("datumRodjenja");
-            HttpContext.Session.Remove("Password");
+            HttpContext.Session.Clear();
 
             return LocalRedirect("~/");
         }
-
-
 
         private Korisnik CreateUser()
         {

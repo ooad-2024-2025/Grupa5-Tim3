@@ -13,20 +13,34 @@
 
             <div class="form-group mb-3">
                 <label asp-for="Input.ime" class="form-label">First name</label>
-                <input asp-for="Input.ime" class="form-control" placeholder="Insert first name" />
+                <input asp-for="Input.ime" class="form-control" placeholder="Insert first name"
+                       pattern="^[A-Za-zČčĆćĐđŠšŽž\s-]+$"
+                       title="Only letters, spaces and hyphens are allowed."
+                       oninput="validateNameFields()" id="firstNameInput" />
                 <span asp-validation-for="Input.ime" class="text-danger"></span>
+                <span class="text-danger" id="imeError" style="display:none;"></span>
             </div>
 
             <div class="form-group mb-3">
                 <label asp-for="Input.prezime" class="form-label">Last name</label>
-                <input asp-for="Input.prezime" class="form-control" placeholder="Insert last name" />
+                <input asp-for="Input.prezime" class="form-control" placeholder="Insert last name"
+                       pattern="^[A-Za-zČčĆćĐđŠšŽž\s-]+$"
+                       title="Only letters, spaces and hyphens are allowed."
+                       oninput="validateNameFields()" id="lastNameInput" />
                 <span asp-validation-for="Input.prezime" class="text-danger"></span>
+                <span class="text-danger" id="prezimeError" style="display:none;"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Input.datumRodjenja" class="form-label">Birthday</label>
-                <input asp-for="Input.datumRodjenja" type="date" class="form-control" />
+                <input asp-for="Input.datumRodjenja"
+                       type="date"
+                       class="form-control"
+                       id="birthDateInput"
+                       max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                       oninput="validateBirthDate()" />
                 <span asp-validation-for="Input.datumRodjenja" class="text-danger"></span>
+                <span class="text-danger" id="birthDateError" style="display: none;"></span>
+
             </div>
 
             <div class="form-group mb-3">
@@ -43,11 +57,10 @@
                        id="passwordInput"
                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$"
                        title="Password must be at least 8 characters long, including an uppercase letter, lowercase letter, a number and a special character."
-                       oninput="validatePassword()" />
+                       oninput="validateForm()" />
 
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
 
-                <!-- Lista zahtjeva za šifru -->
                 <div id="passwordRequirements" class="mt-2 p-3 border rounded" style="background-color: #f8f9fa; font-size: 0.9em;">
                     <h6 class="mb-2 text-muted">Password requirements:</h6>
                     <ul class="list-unstyled mb-0">
@@ -78,10 +91,9 @@
             <div class="form-group mb-3">
                 <label asp-for="Input.ConfirmPassword" class="form-label">Confirm password</label>
                 <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password"
-                       id="confirmPasswordInput" oninput="validatePasswordMatch()" />
+                       id="confirmPasswordInput" oninput="validateForm()" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
 
-                <!-- Prikaz podudaranja šifara -->
                 <div id="passwordMatch" class="mt-2" style="display: none;">
                     <div id="match-indicator" class="d-flex align-items-center">
                         <i id="match-icon" class="fas fa-times text-danger me-2"></i>
@@ -93,7 +105,6 @@
             <button id="registerSubmit" type="submit" class="btn w-100" style="background-color: #d6b3ff; color: black; font-weight: bold;" disabled>
                 REGISTER
             </button>
-
         </form>
 
         <div class="mt-4 text-center">
@@ -127,7 +138,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <!-- Font Awesome za ikone -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
@@ -167,21 +177,68 @@
     </style>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            validatePassword(); // provjeri odmah pri učitavanju
+            document.addEventListener("DOMContentLoaded", function () {
+                const form = document.querySelector("form");
+                const dateInput = document.querySelector("#Input_datumRodjenja");
 
-            var showModal = @Json.Serialize(Model.ShowVerificationModal);
-            if (showModal) {
-                var myModal = new bootstrap.Modal(document.getElementById('verificationModal'));
-                myModal.show();
+                form.addEventListener("submit", function (e) {
+                    const selectedDate = new Date(dateInput.value);
+                    const today = new Date();
+
+                    // Ukloni stare greške
+                    let oldError = document.querySelector("#dateError");
+                    if (oldError) oldError.remove();
+
+                    if (selectedDate > today) {
+                        e.preventDefault(); // Spriječi slanje forme
+
+                        const error = document.createElement("span");
+                        error.id = "dateError";
+                        error.style.color = "red";
+                        error.textContent = "Date of birth cannot be in the future.";
+
+                        dateInput.parentElement.appendChild(error);
+                    }
+                });
+            });
+
+            function validateBirthDate() {
+            const birthDateInput = document.getElementById("birthDateInput");
+            const birthDateError = document.getElementById("birthDateError");
+            const submitBtn = document.getElementById("registerSubmit");
+
+            const selectedDate = new Date(birthDateInput.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // ignoriraj vrijeme
+
+            let isValid = true;
+
+            if (birthDateInput.value && selectedDate > today) {
+                birthDateError.textContent = "Date of birth cannot be in the future.";
+                birthDateError.style.display = "block";
+                isValid = false;
+            } else {
+                birthDateError.textContent = "";
+                birthDateError.style.display = "none";
             }
-        });
+
+            // Validacija ostalih polja
+            const nameValid = validateNameFields();
+            const passValid = validatePassword();
+            const matchValid = validatePasswordMatch();
+
+            // Dugme je aktivno samo ako sve važi
+            submitBtn.disabled = !(isValid && nameValid && passValid && matchValid);
+
+            return isValid;
+        }
+
+        // Pokreni validaciju pri promjeni datuma
+        document.getElementById("birthDateInput").addEventListener("input", validateBirthDate);
+
 
         function validatePassword() {
             const password = document.getElementById("passwordInput").value;
-            const submitBtn = document.getElementById("registerSubmit");
-
-            // Provjeri svaki zahtjev
             const requirements = {
                 'length-req': password.length >= 8,
                 'lowercase-req': /[a-z]/.test(password),
@@ -192,31 +249,20 @@
 
             let allValid = true;
 
-            // Ažuriraj ikone i stilove za svaki zahtjev
             Object.keys(requirements).forEach(reqId => {
                 const element = document.getElementById(reqId);
                 const icon = element.querySelector('i');
 
                 if (requirements[reqId]) {
-                    // Zahtjev je ispunjen
                     icon.className = 'fas fa-check text-success me-2';
                     element.style.color = '#198754';
                 } else {
-                    // Zahtjev nije ispunjen
                     icon.className = 'fas fa-times text-danger me-2';
                     element.style.color = '#dc3545';
                     allValid = false;
                 }
             });
 
-            // Provjeri i potvrdu šifre
-            const confirmPassword = document.getElementById("confirmPasswordInput").value;
-            const passwordsMatch = validatePasswordMatch();
-
-            // Omogući/onemogući dugme za registraciju
-            submitBtn.disabled = !(allValid && passwordsMatch);
-
-            // Promijeni boju okvira na osnovu validnosti
             const requirementsBox = document.getElementById('passwordRequirements');
             if (allValid && password.length > 0) {
                 requirementsBox.style.borderColor = '#198754';
@@ -228,6 +274,8 @@
                 requirementsBox.style.borderColor = '#dee2e6';
                 requirementsBox.style.backgroundColor = '#f8f9fa';
             }
+
+            return allValid;
         }
 
         function validatePasswordMatch() {
@@ -238,12 +286,10 @@
             const matchText = document.getElementById("match-text");
             const matchIndicator = document.getElementById("match-indicator");
 
-            // Prikaži div samo ako je potvrda šifre unesena
             if (confirmPassword.length > 0) {
                 matchDiv.style.display = 'block';
 
                 if (password === confirmPassword && password.length > 0) {
-                    // Šifre se poklapaju
                     matchIcon.className = 'fas fa-check text-success me-2';
                     matchText.textContent = 'Passwords match';
                     matchText.style.color = '#198754';
@@ -251,7 +297,6 @@
                     matchIndicator.style.border = '1px solid #198754';
                     return true;
                 } else {
-                    // Šifre se ne poklapaju
                     matchIcon.className = 'fas fa-times text-danger me-2';
                     matchText.textContent = 'Passwords do not match';
                     matchText.style.color = '#dc3545';
@@ -261,23 +306,66 @@
                 }
             } else {
                 matchDiv.style.display = 'none';
-                return password.length === 0; // Ako nema šifre, ne zahtijevaj podudaranje
+                return false;
             }
         }
 
-        // Dodaj event listenere za real-time validaciju
-        document.getElementById("passwordInput").addEventListener("input", function() {
-            validatePassword();
-            validatePasswordMatch();
-        });
+        function validateNameFields() {
+            const firstName = document.getElementById("firstNameInput");
+            const lastName = document.getElementById("lastNameInput");
+            const submitBtn = document.getElementById("registerSubmit");
 
-        document.getElementById("confirmPasswordInput").addEventListener("input", function() {
-            validatePasswordMatch();
-            // Provjeri i glavnu validaciju za omogućavanje dugmeta
-            const password = document.getElementById("passwordInput").value;
-            if (password.length > 0) {
-                validatePassword();
+            const imeError = document.getElementById("imeError");
+            const prezimeError = document.getElementById("prezimeError");
+
+            const nameRegex = /^[A-Za-zČčĆćĐđŠšŽž\s-]+$/;
+
+            let valid = true;
+
+            // Validacija imena
+            if (firstName.value.length > 0 && !nameRegex.test(firstName.value)) {
+                imeError.textContent = "First name can only contain letters, spaces and hyphens.";
+                imeError.style.display = "block";
+                valid = false;
+            } else {
+                imeError.textContent = "";
+                imeError.style.display = "none";
             }
+
+            // Validacija prezimena
+            if (lastName.value.length > 0 && !nameRegex.test(lastName.value)) {
+                prezimeError.textContent = "Last name can only contain letters, spaces and hyphens.";
+                prezimeError.style.display = "block";
+                valid = false;
+            } else {
+                prezimeError.textContent = "";
+                prezimeError.style.display = "none";
+            }
+
+            // Ponovno provjeri šifru i podudaranje
+            const passwordValid = validatePassword();
+            const matchValid = validatePasswordMatch();
+
+            // Dugme je aktivno samo ako sve važi
+            submitBtn.disabled = !(valid && passwordValid && matchValid);
+
+            return valid;
+        }
+
+        function validateForm() {
+            const passwordValid = validatePassword();
+            const passwordsMatch = validatePasswordMatch();
+            const nameRegex = /^[A-Za-zČčĆćĐđŠšŽž\s-]+$/;
+            const firstName = document.getElementById("firstNameInput").value;
+            const lastName = document.getElementById("lastNameInput").value;
+
+            const validNames = nameRegex.test(firstName) && nameRegex.test(lastName);
+
+            document.getElementById("registerSubmit").disabled = !(passwordValid && passwordsMatch && validNames);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            validateForm();
         });
     </script>
 }
