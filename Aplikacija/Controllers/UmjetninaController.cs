@@ -367,12 +367,23 @@ namespace Grupa5Tim3.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var umjetnina = await _context.Umjetnina.FindAsync(id);
+
             if (umjetnina != null)
             {
+                // Find all auctions related to the artwork
+                var relatedAukcije = await _context.Aukcija
+                    .Where(a => a.umjetninaID == id)
+                    .ToListAsync();
+
+                // Delete related auctions first
+                _context.Aukcija.RemoveRange(relatedAukcije);
+
+                // Then delete the artwork
                 _context.Umjetnina.Remove(umjetnina);
+
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
